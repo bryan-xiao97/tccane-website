@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tzu Chi Collegiate Association Northeast Region | TCCANE</title>
+  <meta name="description" content="Discover TCCANE (Tzu Chi Collegiate Association Northeast Region). Join a wholesome community of Tzu Ching youth dedicated to global humanitarian work, leadership, and sustainability.">
+  <meta name="keywords" content="TCCA, TCCANE, Tzu Chi Youth, Tzu Ching, volunteer, college service, community, sustainability, charity, NYU, Stony Brook">
+  
+  <!-- SEO & Social Meta -->
+  <meta property="og:title" content="Tzu Chi Collegiate Association Northeast Region (TCCANE)">
+  <meta property="og:description" content="Empowering college youth through compassionate leadership, environmental sustainability, and international service.">
+  <meta property="og:image" content="hero.png">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-theme">
+  <!-- Dynamic Background Gradients -->
+  <div class="bg-gradient-glow"></div>
+
+  <!-- Header & Navigation -->
+  <header class="app-header">
+    <div class="nav-container">
+      <a href="#" class="logo-area" id="nav-logo">
+        <svg class="logo-svg" viewBox="0 0 100 100" width="40" height="40">
+          <!-- Stylized Lotus / Hand shape representing Tzu Chi and growth -->
+          <path d="M50,15 C40,35 25,45 25,65 C25,78 35,85 50,85 C65,85 75,78 75,65 C75,45 60,35 50,15 Z" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+          <path d="M50,35 C45,45 35,52 35,65 C35,72 41,77 50,77 C59,77 65,72 65,65 C65,52 55,45 50,35 Z" fill="currentColor"/>
+          <circle cx="50" cy="22" r="4" fill="currentColor"/>
+        </svg>
+        <span class="logo-text">TCCA <span class="logo-accent">Northeast</span></span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="desktop-nav" aria-label="Main Navigation">
+        <a href="#why-tcca" class="nav-link">Why TCCA</a>
+        <a href="#journey" class="nav-link">Tzu Ching Journey</a>
+        <a href="#chapters" class="nav-link">Chapters</a>
+        <a href="#milestones" class="nav-link">Timeline</a>
+        <a href="#resources" class="nav-link">Resources</a>
+        <a href="#contact" class="btn btn-primary-outline nav-cta">Join Us</a>
+      </nav>
+
+      <!-- Theme & Mobile Menu Actions -->
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle light/dark theme">
+          <!-- Sun Icon -->
+          <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <!-- Moon Icon -->
+          <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="display: none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <button id="mobile-menu-btn" class="icon-btn mobile-only" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+            <line x1="3" y1="12" x2="21" y2="12" class="line-mid"></line>
+            <line x1="3" y1="6" x2="21" y2="6" class="line-top"></line>
+            <line x1="3" y1="18" x2="21" y2="18" class="line-bot"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-menu">
+      <nav class="mobile-nav" aria-label="Mobile Navigation">
+        <a href="#why-tcca" class="mobile-link">Why TCCA</a>
+        <a href="#journey" class="mobile-link">Tzu Ching Journey</a>
+        <a href="#chapters" class="mobile-link">Chapters</a>
+        <a href="#milestones" class="mobile-link">Timeline</a>
+        <a href="#resources" class="mobile-link">Resources</a>
+        <a href="#contact" class="btn btn-primary mobile-cta">Join Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <span class="badge hero-badge">Tzu Chi Collegiate Association Northeast</span>
+        <h1 class="hero-title">Empowering Compassionate <span class="gradient-text">Youth Leaders</span></h1>
+        <p class="hero-desc">
+          TCCANE is a worldwide network of college students passionate about community service, environmental sustainability, mindfulness, and personal growth. Find your wholesome, support-driven family today.
+        </p>
+        <div class="hero-actions">
+          <a href="#journey" class="btn btn-primary">Start Your Journey</a>
+          <a href="#why-tcca" class="btn btn-secondary-outline">Learn More</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">4</span>
+            <span class="stat-label">Active Chapters</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">20+</span>
+            <span class="stat-label">Service Hours to Uniform</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">10</span>
+            <span class="stat-label">Noble Precepts</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-graphic-container">
+        <div class="hero-glass-card">
+          <img src="hero.png" alt="TCCANE Volunteering & Environmental Growth Illustration" class="hero-img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Why TCCA -->
+  <section class="why-tcca-section" id="why-tcca">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="badge section-badge">Core Pillars</span>
+        <h2 class="section-title">Why Get Involved with TCCA?</h2>
+        <p class="section-subtitle">Make your college years deeply rewarding by growing as a leader, supporting others, and cultivating a mindful life.</p>
+      </div>
+
+      <div class="grid grid-4">
+        <!-- Pillar 1 -->
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-wrapper p-blue">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3>Tangible Global Impact</h3>
+          <p>Gateway to real-world humanitarian work backed by a massive international charity. Engage in local charity distributions, tutoring, and crucial eco-action.</p>
+          <ul class="pillar-list">
+            <li>Local food distributions</li>
+            <li>Youth tutoring & mentorship</li>
+            <li>Campus recycling & climate action</li>
+          </ul>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-wrapper p-teal">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <h3>Compassionate Leadership</h3>
+          <p>Cultivate essential leadership skills and project management through local initiatives, campus coordination, and official training conferences.</p>
+          <ul class="pillar-list">
+            <li>National training retreats</li>
+            <li>Executive board opportunities</li>
+            <li>Official Tzu Ching Uniform milestone</li>
+          </ul>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-wrapper p-green">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </div>
+          <h3>Supportive Community</h3>
+          <p>Find a wholesome "safe haven" amid college chaos. We foster a supportive culture grounded in filial piety, mutual respect, and mindfulness.</p>
+          <ul class="pillar-list">
+            <li>Substance-free social circle</li>
+            <li>Mindfulness & self-care sharing</li>
+            <li>Deep culture of kindness</li>
+          </ul>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="glass-card pillar-card">
+          <div class="pillar-icon-wrapper p-purple">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </div>
+          <h3>Global Networking</h3>
+          <p>Join a vast family active in dozens of countries. Unlock avenues to global youth summits, international volunteer operations, and lifelong bonds.</p>
+          <ul class="pillar-list">
+            <li>International volunteer trips</li>
+            <li>Global youth summits in Taiwan</li>
+            <li>Vast professional alumni network</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: The Tzu Ching Journey -->
+  <section class="journey-section" id="journey">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="badge section-badge">Milestones & Standards</span>
+        <h2 class="section-title">The Path to Becoming a <span class="gradient-text">Tzu Ching</span></h2>
+        <p class="section-subtitle">Earning the official blue-and-white uniform represents a commitment to compassionate service, personal discipline, and representing TCCA dignity.</p>
+      </div>
+
+      <div class="grid grid-2-1">
+        <!-- Interactive Uniform Eligibility Tracker -->
+        <div class="glass-card tracker-card" id="tracker-section">
+          <div class="card-header">
+            <div class="header-with-badge">
+              <h3>Uniform Eligibility Tracker</h3>
+              <span class="badge badge-success tracker-status" id="tracker-status-badge">Inquirer</span>
+            </div>
+            <p>Interactively check your requirements to see your progress towards the coveted blue-and-white uniform!</p>
+          </div>
+
+          <div class="tracker-body">
+            <!-- Dynamic progress visual -->
+            <div class="progress-container">
+              <div class="progress-labels">
+                <span>Progress to Uniform</span>
+                <span id="tracker-percent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="tracker-progress" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Tracker form inputs -->
+            <form class="tracker-form" id="tracker-form" onsubmit="return false;">
+              <!-- 1. Hours input -->
+              <div class="form-group flex-group">
+                <label for="hours-input" class="flex-label">
+                  <strong>1. Service Hours completed</strong>
+                  <span class="label-hint">Must complete at least 20 hours</span>
+                </label>
+                <div class="input-with-action">
+                  <input type="number" id="hours-input" min="0" max="200" value="0" class="inline-input">
+                  <span class="input-suffix">hours</span>
+                </div>
+              </div>
+
+              <!-- 2. Event types checkbox -->
+              <div class="form-group">
+                <label><strong>2. Event Types completed (Need at least 3 unique types)</strong></label>
+                <div class="checkbox-grid">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" class="event-type-chk" value="charity">
+                    <span class="checkmark"></span>
+                    Charity & Food Relief
+                  </label>
+                  <label class="custom-checkbox">
+                    <input type="checkbox" class="event-type-chk" value="eco">
+                    <span class="checkmark"></span>
+                    Environmental Action
+                  </label>
+                  <label class="custom-checkbox">
+                    <input type="checkbox" class="event-type-chk" value="edu">
+                    <span class="checkmark"></span>
+                    Youth Tutoring / Education
+                  </label>
+                  <label class="custom-checkbox">
+                    <input type="checkbox" class="event-type-chk" value="humanistic">
+                    <span class="checkmark"></span>
+                    Humanistic Culture
+                  </label>
+                </div>
+              </div>
+
+              <!-- 3. Retreat attendance -->
+              <div class="form-group">
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="retreat-chk">
+                  <span class="checkmark"></span>
+                  <strong>3. Attended at least one regional retreat, orientation, or TCCA conference</strong>
+                </label>
+              </div>
+
+              <!-- 4. Advisor approval -->
+              <div class="form-group">
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="advisor-chk">
+                  <span class="checkmark"></span>
+                  <strong>4. Received approval from chapter advisor and submitted verified log</strong>
+                </label>
+              </div>
+            </form>
+          </div>
+
+          <div class="tracker-footer alert-box" id="tracker-feedback-box">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" class="alert-icon">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span id="tracker-feedback-text">Get started by entering your completed service hours!</span>
+          </div>
+        </div>
+
+        <!-- The 10 Precepts Accordion -->
+        <div class="glass-card precepts-card">
+          <div class="card-header">
+            <h3>Upholding Dignity: The 10 Precepts</h3>
+            <p>Wearing the uniform means representing TCCA values. Uniformed members commit to following ten basic guidelines of mindful conduct.</p>
+          </div>
+
+          <div class="accordion" id="precepts-accordion">
+            <!-- Item 1 -->
+            <div class="accordion-item active">
+              <button class="accordion-trigger" aria-expanded="true">
+                <span class="precept-num">01 - 03</span>
+                <span class="precept-title">Respect for Life & Society</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="accordion-content">
+                <p>Includes: No killing (cherish all life and promote peace), no stealing, and upholding societal laws. Fosters safe, caring, and ethical environments.</p>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="accordion-item">
+              <button class="accordion-trigger" aria-expanded="false">
+                <span class="precept-num">04 - 05</span>
+                <span class="precept-title">Integrity & Relationship Mindfulness</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="accordion-content">
+                <p>Includes: No lying (promoting trust, honesty, and speaking wholesome words) and practicing relationship mindfulness (being respectful and upright in personal relationships).</p>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="accordion-item">
+              <button class="accordion-trigger" aria-expanded="false">
+                <span class="precept-num">06 - 08</span>
+                <span class="precept-title">Healthy & Substance-Free Living</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="accordion-content">
+                <p>Includes: No drinking alcohol, no smoking (including vaping/tobacco), and no gambling. Fosters a clean, supportive, substance-free collegiate family.</p>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="accordion-item">
+              <button class="accordion-trigger" aria-expanded="false">
+                <span class="precept-num">09 - 10</span>
+                <span class="precept-title">Compassion, Diet, & Filial Piety</span>
+                <span class="accordion-icon">+</span>
+              </button>
+              <div class="accordion-content">
+                <p>Includes: Adhering to traffic regulations, practicing filial piety (respecting and supporting parents & elders), and committing to a compassionate vegetarian/vegan diet to protect our planet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graduation Sash Card -->
+      <div class="glass-card sash-card mt-3">
+        <div class="sash-grid">
+          <div class="sash-visual">
+            <svg viewBox="0 0 100 150" width="80" height="120" class="sash-svg">
+              <!-- Gradient representing a graduation sash -->
+              <path d="M25,0 L35,0 L65,130 L55,145 L25,0" fill="url(#sash-grad)"/>
+              <path d="M40,0 L50,0 L80,130 L70,145 L40,0" fill="url(#sash-grad)" opacity="0.7"/>
+              <text x="35" y="110" fill="#fff" font-size="8" font-weight="bold" transform="rotate(-65 40 100)">Tzu Ching</text>
+              <defs>
+                <linearGradient id="sash-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#103A5C" />
+                  <stop offset="100%" stop-color="#3AAFA9" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="sash-text">
+            <h4>Graduation Sash & Active Status Requirements</h4>
+            <p>
+              To celebrate your collegiate service, TCCANE awards official <strong>Tzu Ching Graduation Sashes</strong>. To earn your sash, you must remain active in your final year by attending at least <strong>five events/meetings</strong> (or 50% of your chapter's hosted events) and participating in at least <strong>one regional event or retreat</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Chapters & E-Board -->
+  <section class="chapters-section" id="chapters">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="badge section-badge">Our Chapters</span>
+        <h2 class="section-title">Northeast Chapters & Leadership</h2>
+        <p class="section-subtitle">TCCANE spans major campus clubs and regional community chapters. Browse active chapters, roles, and officer eligibility details.</p>
+      </div>
+
+      <!-- Interactive Tab controls -->
+      <div class="tab-controls">
+        <button class="tab-btn active" data-filter="all">All Chapters</button>
+        <button class="tab-btn" data-filter="campus">Campus Chapters</button>
+        <button class="tab-btn" data-filter="community">Community Chapters</button>
+      </div>
+
+      <div class="grid grid-2" id="chapters-grid">
+        <!-- NYU -->
+        <div class="glass-card chapter-card" data-type="campus">
+          <div class="card-pill campus-pill">Campus Chapter</div>
+          <h3>NYU TCCA</h3>
+          <p class="chapter-loc">New York University, NYC</p>
+          <p class="chapter-desc">A highly vibrant campus chapter. We host bi-weekly meetings, local service events in Manhattan, and campus-wide eco-awareness drives.</p>
+          <div class="chapter-officers">
+            <h5>E-Board Leadership Roles</h5>
+            <div class="roles-chips">
+              <span class="chip">President</span>
+              <span class="chip">Vice President</span>
+              <span class="chip">Secretary</span>
+              <span class="chip">Treasurer</span>
+              <span class="chip">Event Coordinator</span>
+            </div>
+          </div>
+          <div class="chapter-footer">
+            <span class="contact-email">tcca.neregion@us.tzuchi.org</span>
+            <a href="#contact" class="btn btn-secondary-outline btn-sm">Get Connected</a>
+          </div>
+        </div>
+
+        <!-- Stony Brook -->
+        <div class="glass-card chapter-card" data-type="campus">
+          <div class="card-pill campus-pill">Campus Chapter</div>
+          <h3>Stony Brook TCCA</h3>
+          <p class="chapter-loc">Stony Brook University, Long Island</p>
+          <p class="chapter-desc">Active student club serving the SBU campus and Long Island community. Special emphasis on environmental recycling and local charity support.</p>
+          <div class="chapter-officers">
+            <h5>E-Board Leadership Roles</h5>
+            <div class="roles-chips">
+              <span class="chip">President</span>
+              <span class="chip">Vice President</span>
+              <span class="chip">Secretary</span>
+              <span class="chip">Social Media Chair</span>
+            </div>
+          </div>
+          <div class="chapter-footer">
+            <span class="contact-email">tcca.neregion@us.tzuchi.org</span>
+            <a href="#contact" class="btn btn-secondary-outline btn-sm">Get Connected</a>
+          </div>
+        </div>
+
+        <!-- Boston Community -->
+        <div class="glass-card chapter-card" data-type="community">
+          <div class="card-pill community-pill">Community Chapter</div>
+          <h3>Boston Community Chapter</h3>
+          <p class="chapter-loc">Boston Metro Area, MA</p>
+          <p class="chapter-desc">For college students whose schools do not have a dedicated TCCA club. Merges students from various Boston area colleges for collective impact.</p>
+          <div class="chapter-officers">
+            <h5>Key Opportunities</h5>
+            <p class="opportunities-text">Chapter leads, food pantry helpers, regional conference planning committee.</p>
+          </div>
+          <div class="chapter-footer">
+            <span class="contact-email">tcca.neregion@us.tzuchi.org</span>
+            <a href="#contact" class="btn btn-secondary-outline btn-sm">Get Connected</a>
+          </div>
+        </div>
+
+        <!-- NYC Community -->
+        <div class="glass-card chapter-card" data-type="community">
+          <div class="card-pill community-pill">Community Chapter</div>
+          <h3>NYC Community Chapter</h3>
+          <p class="chapter-loc">New York City Area, NY</p>
+          <p class="chapter-desc">Unites independent students in all five boroughs. Collaborates closely with the Tzu Chi New York branch on high-impact service projects.</p>
+          <div class="chapter-officers">
+            <h5>Key Opportunities</h5>
+            <p class="opportunities-text">City coordinators, volunteer supervisors, social media and media chairs.</p>
+          </div>
+          <div class="chapter-footer">
+            <span class="contact-email">tcca.neregion@us.tzuchi.org</span>
+            <a href="#contact" class="btn btn-secondary-outline btn-sm">Get Connected</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Officer Requirements Box -->
+      <div class="glass-card officers-req-box mt-3">
+        <h4>Officer & E-Board Eligibility Rules</h4>
+        <p>
+          TCCANE officers are elected annually in <strong>March or April</strong>. E-board members are highly encouraged to be uniformed Tzu Ching. Candidates for President and Vice President <strong>must</strong> have been active members for at least one semester and participated in at least two service events. Campus advisors mentor student officers but <em>do not</em> appoint them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Timeline & Annual Milestones -->
+  <section class="milestones-section" id="milestones">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="badge section-badge">The Academic Year</span>
+        <h2 class="section-title">Annual Milestones & Key Events</h2>
+        <p class="section-subtitle">Here is a glance at the standard annual timeline. TCCANE offers opportunities for growth all year round.</p>
+      </div>
+
+      <!-- Horizontal/Vertical Responsive Timeline -->
+      <div class="timeline">
+        <!-- Milestone 1 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Aug - Sept</div>
+          <div class="timeline-content glass-card">
+            <h4>National TCCA Conference</h4>
+            <p>Kickstart the new academic year! Chapters complete registrations, and student leads attend the National training camp to exchange service ideas.</p>
+          </div>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Oct - Nov</div>
+          <div class="timeline-content glass-card">
+            <h4>Fall Orientations</h4>
+            <p>Local chapters host welcome sessions and orientations. We welcome prospective volunteers, introduce our missions, and launch local service activities.</p>
+          </div>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">December</div>
+          <div class="timeline-content glass-card">
+            <h4>Global Conference in Taiwan</h4>
+            <p>Uniformed Tzu Chings can apply to represent the Northeast Region at the international TCCA summit in Hualien, Taiwan, learning from global volunteers.</p>
+          </div>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">May</div>
+          <div class="timeline-content glass-card">
+            <h4>Northeast TCCA Graduation</h4>
+            <p>We honor graduating seniors with Tzu Chi sashes, celebrate our annual impact, elect incoming officers, and reflect on our shared growth.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Cultural Hub & Resources -->
+  <section class="resources-section" id="resources">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="badge section-badge">Cultural Insights</span>
+        <h2 class="section-title">Humanistic Culture & Resources</h2>
+        <p class="section-subtitle">Familiarize yourself with Tzu Chi terminology, professional benefits, and our daily commitment to sustainable living.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <!-- Terminology Card -->
+        <div class="glass-card cultural-card hover-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <h3>Tzu Chi Terminology</h3>
+          <p>We honor our advisors, mentors, and older peers with respectful terms that emphasize a unified family culture. Hover to learn:</p>
+          <div class="terms-list">
+            <div class="term-item">
+              <span class="term-word">Shī gū (SG)</span>
+              <span class="term-def">"Dharma Aunt" — Female adult volunteer advisor</span>
+            </div>
+            <div class="term-item">
+              <span class="term-word">Shī bó (SB)</span>
+              <span class="term-def">"Dharma Uncle" — Male adult volunteer advisor</span>
+            </div>
+            <div class="term-item">
+              <span class="term-word">Xué jiě (XJ)</span>
+              <span class="term-def">"Senior Sister" — Alumni female mentor</span>
+            </div>
+            <div class="term-item">
+              <span class="term-word">Xué zhǎng (XZ)</span>
+              <span class="term-def">"Senior Brother" — Alumni male mentor</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eco-Consciousness / EPK Card -->
+        <div class="glass-card cultural-card eco-epk-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+          </div>
+          <h3>Eco-Protection Kit (EPK)</h3>
+          <p>Sustainability is our core focus. TCCA has a strict <strong>zero-single-use</strong> policy at events. All volunteers carry an EPK comprising reusable utensils, bowl, and cup.</p>
+          <div class="epk-visual-container">
+            <div class="epk-items">
+              <div class="epk-badge" id="epk-bowl">🥣 Bowl</div>
+              <div class="epk-badge" id="epk-cup">🥤 Cup</div>
+              <div class="epk-badge" id="epk-utensils">🥢 Utensils</div>
+            </div>
+          </div>
+          <p class="small-hint mt-2">Always carry your EPK to events! Let's protect our Earth together.</p>
+        </div>
+
+        <!-- Professional Development -->
+        <div class="glass-card cultural-card hover-card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <h3>Professional Benefits</h3>
+          <p>TCCANE is highly respected by admissions officers and employers. We provide formal support for dedicated volunteers:</p>
+          <ul class="pillar-list">
+            <li>Official Service Hours logs</li>
+            <li>Detailed Letters of Recommendation</li>
+            <li>Tzu Chi Foundation verification</li>
+          </ul>
+          <p class="policy-alert">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" style="display:inline; vertical-align:middle; margin-right:4px;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Requires <strong>2-4 weeks' notice</strong> and hour logs verification.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: Dynamic Form & Inquiry -->
+  <section class="contact-section" id="contact">
+    <div class="container grid grid-2">
+      <!-- Contact Info -->
+      <div class="contact-info-area">
+        <span class="badge section-badge">Get in Touch</span>
+        <h2 class="section-title">Join the TCCANE Family</h2>
+        <p>Ready to make a difference, build deep bonds, and discover compassionate leadership? Reach out to the Northeast Regional team today.</p>
+        
+        <div class="contact-details">
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h5>Northeast Region General Contacts</h5>
+              <a href="mailto:tcca.neregion@us.tzuchi.org" class="email-link">tcca.neregion@us.tzuchi.org</a>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <div>
+              <h5>Need Hour Verification or Recommendation?</h5>
+              <p class="small-text">Provide your hours log, the target program details, and your chapter advisor's name. Remember to request 2-4 weeks in advance!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- High-fidelity contact form -->
+      <div class="glass-card contact-form-card">
+        <h3>Inquiry & Verification Portal</h3>
+        <p>Submit an inquiry to join a chapter, ask questions, or request service hours verification.</p>
+        
+        <form id="inquiry-form" class="inquiry-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-name">Name</label>
+              <input type="text" id="form-name" placeholder="Your full name" required>
+            </div>
+            <div class="form-group">
+              <label for="form-email">Email</label>
+              <input type="email" id="form-email" placeholder="student@edu.com" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="form-chapter">Chapter / Location</label>
+              <select id="form-chapter" required>
+                <option value="" disabled selected>Select chapter</option>
+                <option value="nyu">NYU Chapter</option>
+                <option value="sbu">Stony Brook Chapter</option>
+                <option value="boston">Boston Community</option>
+                <option value="nyc">NYC Community</option>
+                <option value="new">I want to start a chapter!</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="form-purpose">Purpose</label>
+              <select id="form-purpose" required>
+                <option value="" disabled selected>Select purpose</option>
+                <option value="join">Join TCCA Volunteer Circle</option>
+                <option value="hours">Hours Verification request</option>
+                <option value="reco">Letter of Recommendation</option>
+                <option value="other">General Questions</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="form-message">Message</label>
+            <textarea id="form-message" rows="4" placeholder="How can TCCANE assist you? If requesting hours or recommendation, include timeline requirements." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Submit Inquiry</button>
+        </form>
+
+        <!-- Form Success Indicator -->
+        <div class="form-success-box" id="form-success">
+          <div class="success-icon-wrapper">
+            <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" stroke-width="3" fill="none">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h4>Inquiry Successfully Received!</h4>
+          <p>Thank you for reaching out to TCCANE. A copy of your request has been logged. Our Regional Advisors will review and get back to you within 2-3 business days.</p>
+          <button id="success-reset-btn" class="btn btn-secondary btn-sm">Submit Another Inquiry</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container footer-grid">
+      <div class="footer-about">
+        <a href="#" class="logo-area">
+          <svg class="logo-svg" viewBox="0 0 100 100" width="30" height="30">
+            <path d="M50,15 C40,35 25,45 25,65 C25,78 35,85 50,85 C65,85 75,78 75,65 C75,45 60,35 50,15 Z" fill="none" stroke="currentColor" stroke-width="6"/>
+            <path d="M50,35 C45,45 35,52 35,65 C35,72 41,77 50,77 C59,77 65,72 65,65 C65,52 55,45 50,35 Z" fill="currentColor"/>
+          </svg>
+          <span class="logo-text">TCCA <span class="logo-accent">Northeast</span></span>
+        </a>
+        <p class="mt-2">Empowering collegiate youth across the Northeast Region to lead with mindfulness, serve with compassion, and protect the environment.</p>
+      </div>
+      
+      <div class="footer-links">
+        <h5>Quick Links</h5>
+        <a href="#why-tcca">Why TCCA</a>
+        <a href="#journey">The Journey</a>
+        <a href="#chapters">Active Chapters</a>
+        <a href="#milestones">Timeline</a>
+      </div>
+
+      <div class="footer-policy">
+        <h5>Official Resources</h5>
+        <a href="mailto:tcca.neregion@us.tzuchi.org">Regional Inquiries</a>
+        <a href="https://tzuchi.us" target="_blank" rel="noopener">Tzu Chi USA Main</a>
+        <a href="#journey">10 Precepts Guide</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Tzu Chi Collegiate Association Northeast Region. Built with compassion and eco-friendly mindfulness.</p>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>
