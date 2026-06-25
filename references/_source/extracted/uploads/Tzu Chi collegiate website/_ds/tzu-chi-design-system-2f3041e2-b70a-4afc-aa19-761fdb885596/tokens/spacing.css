@@ -1,0 +1,40 @@
+/* ============================================================
+   Tzu Chi Design System — Spacing, layout, radius & shadow
+   A frugal, serene rhythm: generous whitespace, soft shadows,
+   gentle radii. See README.md "Visual Foundations".
+   ============================================================ */
+
+:root {
+  /* ---- Spacing scale (4px base) --------------------------- */
+  --tc-space-1: 0.25rem;   /*  4px */
+  --tc-space-2: 0.5rem;    /*  8px */
+  --tc-space-3: 0.75rem;   /* 12px */
+  --tc-space-4: 1rem;      /* 16px */
+  --tc-space-5: 1.5rem;    /* 24px */
+  --tc-space-6: 2rem;      /* 32px */
+  --tc-space-7: 2.75rem;   /* 44px */
+  --tc-space-8: 4rem;      /* 64px */
+
+  /* Section rhythm — large, breathing vertical space */
+  --tc-space-section: clamp(3.5rem, 2.2rem + 5.5vw, 6.5rem);
+
+  /* ---- Layout --------------------------------------------- */
+  --tc-wrap: 1140px;       /* content max width */
+  --tc-measure: 720px;     /* comfortable text column */
+  --tc-gutter: clamp(1.1rem, 0.6rem + 2vw, 2.25rem); /* @kind spacing */
+
+  /* ---- Radius --------------------------------------------- */
+  --tc-radius-sm: 8px;
+  --tc-radius: 14px;       /* cards, frames */
+  --tc-radius-lg: 20px;
+  --tc-radius-pill: 999px; /* buttons, tags */
+
+  /* ---- Borders -------------------------------------------- */
+  --tc-border-width: 1px;
+  --tc-border-width-strong: 1.5px;
+
+  /* ---- Shadows (soft, low, navy-tinted) ------------------- */
+  --tc-shadow-soft: 0 1px 2px rgba(22,34,59,.04), 0 4px 14px rgba(22,34,59,.05);
+  --tc-shadow-card: 0 1px 2px rgba(22,34,59,.05), 0 10px 30px rgba(22,34,59,.07);
+  --tc-shadow-lift: 0 2px 4px rgba(22,34,59,.06), 0 18px 44px rgba(22,34,59,.10);
+}

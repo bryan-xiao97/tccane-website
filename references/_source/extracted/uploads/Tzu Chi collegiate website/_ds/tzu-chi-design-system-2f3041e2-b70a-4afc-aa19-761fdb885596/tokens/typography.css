@@ -1,0 +1,55 @@
+/* ============================================================
+   Tzu Chi Design System — Typography tokens
+   No official Tzu Chi typeface is published. The system is
+   built on platform fonts for an offline, frugal default, with
+   webfont fallbacks (Spectral, Source Sans 3) loaded so the
+   contemplative voice survives on machines without Palatino /
+   Segoe UI. CJK stays on platform fonts. See README.md.
+   ============================================================ */
+
+/* Webfont fallbacks — flagged substitutions (see README "Fonts"):
+   Spectral  -> nearest contemplative humanist serif for Palatino
+   Source Sans 3 -> quiet humanist sans, near Segoe UI            */
+@import url("https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
+:root {
+  /* ---- Families ------------------------------------------- */
+  /* Display: humanist serif with calligraphic roots — headlines, contemplative voice */
+  --tc-font-display: "Palatino Linotype", "Spectral", "Iowan Old Style", "Book Antiqua", "Palatino", Georgia, serif;
+  /* Body / interface: clean, quiet sans */
+  --tc-font-body: "Segoe UI", "Source Sans 3", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  /* Brush accent: kai / brush style for Jing Si aphorisms (CJK, platform) */
+  --tc-font-brush: "STKaiti", "KaiTi", "Kaiti TC", "BiauKai", "DFKai-SB", "Noto Serif TC", serif;
+  /* Inline Chinese terms */
+  --tc-font-zh: "Microsoft JhengHei", "PingFang TC", "Noto Sans CJK TC", "Microsoft YaHei", sans-serif;
+
+  /* ---- Type scale (fluid) — font sizes */
+  --tc-fs-display: clamp(2.4rem, 1.55rem + 3.4vw, 3.9rem); /* @kind other */
+  --tc-fs-h2: clamp(1.7rem, 1.3rem + 1.8vw, 2.5rem); /* @kind other */
+  --tc-fs-h3: 1.2rem; /* @kind other */
+  --tc-fs-lead: clamp(1.06rem, 1rem + 0.45vw, 1.28rem); /* @kind other */
+  --tc-fs-body: 1.0625rem; /* @kind other */
+  --tc-fs-small: 0.92rem; /* @kind other */
+  --tc-fs-eyebrow: 0.78rem; /* @kind other */
+  --tc-fs-caption: 0.82rem; /* @kind other */
+  --tc-fs-aphorism-zh: clamp(1.9rem, 1.25rem + 2.7vw, 3rem); /* @kind other */
+  --tc-fs-aphorism-en: clamp(1.2rem, 1rem + 1vw, 1.65rem); /* @kind other */
+
+  /* ---- Weights */
+  --tc-fw-regular: 400; /* @kind other */
+  --tc-fw-medium: 500; /* @kind other */
+  --tc-fw-semibold: 600; /* @kind other */
+
+  /* ---- Line heights */
+  --tc-lh-tight: 1.08; /* @kind other */
+  --tc-lh-heading: 1.15; /* @kind other */
+  --tc-lh-body: 1.7; /* @kind other */
+  --tc-lh-snug: 1.4; /* @kind other */
+
+  /* ---- Tracking */
+  --tc-tracking-display: -0.015em; /* @kind other */
+  --tc-tracking-tight: -0.01em; /* @kind other */
+  --tc-tracking-eyebrow: 0.14em; /* @kind other */
+  --tc-tracking-caps: 0.12em; /* @kind other */
+  --tc-tracking-brush: 0.12em; /* @kind other */
+}

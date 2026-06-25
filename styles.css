@@ -1,0 +1,324 @@
+@import url("https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
+/* ============================================================
+   TCCA Northeast — Tzu Chi Collegiate Association, NE Region
+   Vanilla static conversion of a Design Component export.
+   Design tokens below are merged from the original Tzu Chi
+   design system (colors / typography / fonts / spacing / motion).
+   Component + hover classes reproduce the former design-system
+   components and the DC-only `style-hover` attribute behavior.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Color tokens
+   ------------------------------------------------------------ */
+:root {
+  /* Base palette */
+  --tc-navy: #1B2A4A;        /* Compassion Navy — primary, grounding */
+  --tc-navy-deep: #16223B;   /* Navy Deep (Ink) — body text on light */
+  --tc-sky: #4A78B0;         /* Sky Blue — secondary accent, large text only */
+  --tc-cloud: #DCE6F2;       /* Cloud Blue — soft fills, tints */
+  --tc-paper: #FAF8F3;       /* Paper White — dominant background */
+  --tc-white: #FFFFFF;       /* Pure White — cards, contrast surfaces */
+  --tc-grey: #6E7277;        /* Monastic Grey — captions, dividers, labels */
+  --tc-ink-grey: #585C61;    /* Ink Grey — secondary body text on light */
+  --tc-stone: #D7D5CE;       /* Stone — borders, placeholder fills */
+  --tc-stone-soft: #ECEAE3;  /* Stone Soft — hairline borders, faint fills */
+  --tc-bamboo: #4E7A51;      /* Bamboo Green — primary CTA, eco accent */
+  --tc-bamboo-deep: #3F6B47; /* Bamboo Deep — button hover, safe green text */
+  --tc-gold: #C9A24B;        /* Seed Gold — rare highlight only */
+  --tc-lotus: #E7C5CE;       /* Lotus Pink — very rare decorative touch */
+
+  /* Semantic — surfaces */
+  --tc-surface-page: var(--tc-paper);
+  --tc-surface-card: var(--tc-white);
+  --tc-surface-sunken: var(--tc-cloud);
+  --tc-surface-inverse: var(--tc-navy);
+  --tc-surface-inverse-deep: var(--tc-navy-deep);
+
+  /* Semantic — text */
+  --tc-text-strong: var(--tc-navy);
+  --tc-text-body: var(--tc-navy-deep);
+  --tc-text-muted: var(--tc-ink-grey);
+  --tc-text-subtle: var(--tc-grey);
+  --tc-text-on-inverse: var(--tc-paper);
+  --tc-text-on-inverse-muted: var(--tc-cloud);
+  --tc-text-accent: var(--tc-bamboo-deep);
+
+  /* Semantic — lines & borders */
+  --tc-border: var(--tc-stone-soft);
+  --tc-border-strong: var(--tc-stone);
+  --tc-divider: var(--tc-stone);
+
+  /* Semantic — interactive */
+  --tc-action: var(--tc-bamboo);
+  --tc-action-hover: var(--tc-bamboo-deep);
+  --tc-action-text: var(--tc-white);
+  --tc-focus-ring: var(--tc-sky);
+
+  /* Accents (decorative, sparing) */
+  --tc-accent-sky: var(--tc-sky);
+  --tc-accent-gold: var(--tc-gold);
+  --tc-accent-lotus: var(--tc-lotus);
+}
+
+/* ------------------------------------------------------------
+   Typography tokens
+   ------------------------------------------------------------ */
+:root {
+  /* Families */
+  --tc-font-display: "Palatino Linotype", "Spectral", "Iowan Old Style", "Book Antiqua", "Palatino", Georgia, serif;
+  --tc-font-body: "Segoe UI", "Source Sans 3", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --tc-font-brush: "STKaiti", "KaiTi", "Kaiti TC", "BiauKai", "DFKai-SB", "Noto Serif TC", serif;
+  --tc-font-zh: "Microsoft JhengHei", "PingFang TC", "Noto Sans CJK TC", "Microsoft YaHei", sans-serif;
+
+  /* Type scale (fluid) */
+  --tc-fs-display: clamp(2.4rem, 1.55rem + 3.4vw, 3.9rem);
+  --tc-fs-h2: clamp(1.7rem, 1.3rem + 1.8vw, 2.5rem);
+  --tc-fs-h3: 1.2rem;
+  --tc-fs-lead: clamp(1.06rem, 1rem + 0.45vw, 1.28rem);
+  --tc-fs-body: 1.0625rem;
+  --tc-fs-small: 0.92rem;
+  --tc-fs-eyebrow: 0.78rem;
+  --tc-fs-caption: 0.82rem;
+  --tc-fs-aphorism-zh: clamp(1.9rem, 1.25rem + 2.7vw, 3rem);
+  --tc-fs-aphorism-en: clamp(1.2rem, 1rem + 1vw, 1.65rem);
+
+  /* Weights */
+  --tc-fw-regular: 400;
+  --tc-fw-medium: 500;
+  --tc-fw-semibold: 600;
+
+  /* Line heights */
+  --tc-lh-tight: 1.08;
+  --tc-lh-heading: 1.15;
+  --tc-lh-body: 1.7;
+  --tc-lh-snug: 1.4;
+
+  /* Tracking */
+  --tc-tracking-display: -0.015em;
+  --tc-tracking-tight: -0.01em;
+  --tc-tracking-eyebrow: 0.14em;
+  --tc-tracking-caps: 0.12em;
+  --tc-tracking-brush: 0.12em;
+}
+
+/* ------------------------------------------------------------
+   Platform font faces (local-only, graceful fallback)
+   ------------------------------------------------------------ */
+@font-face {
+  font-family: "Palatino Linotype";
+  src: local("Palatino Linotype"), local("Palatino"), local("Book Antiqua"), local("Iowan Old Style");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Palatino Linotype";
+  src: local("Palatino Linotype Italic"), local("Palatino Italic"), local("Book Antiqua Italic");
+  font-weight: 400 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "STKaiti";
+  src: local("STKaiti"), local("KaiTi"), local("Kaiti TC"), local("BiauKai"), local("DFKai-SB");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Microsoft JhengHei";
+  src: local("Microsoft JhengHei"), local("PingFang TC"), local("Noto Sans CJK TC"), local("Microsoft YaHei");
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------
+   Spacing, layout, radius & shadow tokens
+   ------------------------------------------------------------ */
+:root {
+  /* Spacing scale (4px base) */
+  --tc-space-1: 0.25rem;
+  --tc-space-2: 0.5rem;
+  --tc-space-3: 0.75rem;
+  --tc-space-4: 1rem;
+  --tc-space-5: 1.5rem;
+  --tc-space-6: 2rem;
+  --tc-space-7: 2.75rem;
+  --tc-space-8: 4rem;
+  --tc-space-section: clamp(3.5rem, 2.2rem + 5.5vw, 6.5rem);
+
+  /* Layout */
+  --tc-wrap: 1140px;
+  --tc-measure: 720px;
+  --tc-gutter: clamp(1.1rem, 0.6rem + 2vw, 2.25rem);
+
+  /* Radius */
+  --tc-radius-sm: 8px;
+  --tc-radius: 14px;
+  --tc-radius-lg: 20px;
+  --tc-radius-pill: 999px;
+
+  /* Borders */
+  --tc-border-width: 1px;
+  --tc-border-width-strong: 1.5px;
+
+  /* Shadows (soft, low, navy-tinted) */
+  --tc-shadow-soft: 0 1px 2px rgba(22,34,59,.04), 0 4px 14px rgba(22,34,59,.05);
+  --tc-shadow-card: 0 1px 2px rgba(22,34,59,.05), 0 10px 30px rgba(22,34,59,.07);
+  --tc-shadow-lift: 0 2px 4px rgba(22,34,59,.06), 0 18px 44px rgba(22,34,59,.10);
+}
+
+/* ------------------------------------------------------------
+   Motion tokens
+   ------------------------------------------------------------ */
+:root {
+  --tc-dur-fast: 0.2s;
+  --tc-dur-base: 0.25s;
+  --tc-dur-reveal: 0.7s;
+  --tc-dur-ambient: 46s;
+  --tc-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --tc-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --tc-reveal-rise: 20px;
+}
+
+/* ------------------------------------------------------------
+   Base reset, page defaults & ambient animation
+   ------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--tc-font-body);
+  color: var(--tc-text-body);
+  background: var(--tc-surface-page);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--tc-focus-ring); outline-offset: 3px; border-radius: 4px; }
+
+@keyframes tccaDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(100vw + 360px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .tcca-cloud { animation: none !important; }
+}
+
+/* ------------------------------------------------------------
+   Components — Button (was TzuChiDesignSystem.Button)
+   ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  font-family: var(--tc-font-body);
+  font-weight: var(--tc-fw-semibold);
+  line-height: 1;
+  border-radius: var(--tc-radius-pill);
+  border: var(--tc-border-width-strong) solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--tc-dur-fast) var(--tc-ease),
+              color var(--tc-dur-fast) var(--tc-ease),
+              border-color var(--tc-dur-fast) var(--tc-ease),
+              transform var(--tc-dur-fast) var(--tc-ease);
+}
+/* sizes */
+.btn--sm { padding: .55rem 1.1rem; font-size: .9rem; }
+.btn--md { padding: .8rem 1.45rem; font-size: .98rem; }
+.btn--lg { padding: 1rem 1.9rem; font-size: 1.05rem; }
+/* variants */
+.btn--primary   { background: var(--tc-action); color: var(--tc-action-text); border-color: transparent; }
+.btn--secondary { background: transparent; color: var(--tc-navy); border-color: var(--tc-navy); }
+.btn--onNavy    { background: var(--tc-white); color: var(--tc-navy); border-color: transparent; }
+/* hover (formerly JS onMouseEnter/Leave handlers) */
+.btn--primary:hover   { background: var(--tc-action-hover); transform: translateY(-1px); }
+.btn--secondary:hover { background: var(--tc-navy); color: var(--tc-white); }
+.btn--onNavy:hover    { background: var(--tc-cloud); }
+
+/* ------------------------------------------------------------
+   Components — Eyebrow (was TzuChiDesignSystem.Eyebrow)
+   ------------------------------------------------------------ */
+.eyebrow {
+  margin: 0 0 .9rem;
+  font-family: var(--tc-font-body);
+  font-size: var(--tc-fs-eyebrow);
+  font-weight: var(--tc-fw-semibold);
+  letter-spacing: var(--tc-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--tc-text-accent);
+}
+.eyebrow--onInverse { color: var(--tc-text-on-inverse-muted); }
+
+/* ------------------------------------------------------------
+   Components — Stat (was TzuChiDesignSystem.Stat)
+   ------------------------------------------------------------ */
+.stat__value {
+  font-family: var(--tc-font-display);
+  font-size: 1.8rem;
+  font-weight: var(--tc-fw-semibold);
+  color: var(--tc-bamboo-deep);
+  line-height: 1.1;
+}
+.stat__label {
+  font-family: var(--tc-font-body);
+  font-size: var(--tc-fs-caption);
+  letter-spacing: .06em;
+  color: var(--tc-text-subtle);
+  margin-top: .25rem;
+}
+
+/* ------------------------------------------------------------
+   Components — Card (was TzuChiDesignSystem.Card)
+   ------------------------------------------------------------ */
+.card {
+  background: var(--tc-surface-card);
+  border: var(--tc-border-width) solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 1.6rem 1.4rem 1.7rem;
+  box-shadow: var(--tc-shadow-soft);
+  transform: none;
+  transition: transform var(--tc-dur-base) var(--tc-ease),
+              box-shadow var(--tc-dur-base) var(--tc-ease);
+}
+.card--interactive:hover {
+  box-shadow: var(--tc-shadow-card);
+  transform: translateY(-4px);
+}
+
+/* ------------------------------------------------------------
+   Components — Tag (was TzuChiDesignSystem.Tag)
+   ------------------------------------------------------------ */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-family: var(--tc-font-body);
+  font-size: .72rem;
+  font-weight: var(--tc-fw-semibold);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .22rem .6rem;
+  border-radius: var(--tc-radius-pill);
+}
+.tag--accent { background: #E7EFE7; border: 1px solid transparent; color: var(--tc-bamboo-deep); }
+.tag--sky-outline { background: transparent; border: 1px solid var(--tc-sky); color: var(--tc-navy); }
+
+/* ------------------------------------------------------------
+   Hover helpers (replace DC-only `style-hover` attribute)
+   ------------------------------------------------------------ */
+.nav-link { transition: color var(--tc-dur-fast) var(--tc-ease); }
+.nav-link:hover { color: var(--tc-bamboo-deep); }
+
+.why-row:hover { background: rgba(255,255,255,.75); }
+.mission-cell:hover { background: rgba(74,120,176,.06); }
+.ledger-row:hover { background: rgba(74,120,176,.05); }
+
+.text-link:hover { text-decoration: underline; }
+
+.footer-link { transition: color var(--tc-dur-fast) var(--tc-ease); }
+.footer-link:hover { color: var(--tc-white); }

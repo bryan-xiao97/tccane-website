@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 210" role="img" aria-label="A lotus bearing a ship, resting on a pond">
+  
+  <ellipse cx="62" cy="170" rx="40" ry="10" fill="#4E7A51" opacity=".30"></ellipse>
+  <ellipse cx="186" cy="178" rx="34" ry="9" fill="#4E7A51" opacity=".24"></ellipse>
+  
+  <ellipse cx="120" cy="186" rx="40" ry="11" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".5"></ellipse>
+  <ellipse cx="120" cy="186" rx="40" ry="11" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".4"></ellipse>
+  <ellipse cx="120" cy="186" rx="40" ry="11" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".3"></ellipse>
+  
+  <g fill="#1B2A4A">
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(0 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(26 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(-26 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(52 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(-52 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(76 120 150)"></path>
+    <path d="M120 150 C108 118,110 92,120 82 C130 92,132 118,120 150 Z" transform="rotate(-76 120 150)"></path>
+  </g>
+  
+  <g fill="#4A78B0">
+    <path d="M120 150 C113 126,114 108,120 100 C126 108,127 126,120 150 Z" transform="rotate(0 120 150)"></path>
+    <path d="M120 150 C113 126,114 108,120 100 C126 108,127 126,120 150 Z" transform="rotate(22 120 150)"></path>
+    <path d="M120 150 C113 126,114 108,120 100 C126 108,127 126,120 150 Z" transform="rotate(-22 120 150)"></path>
+    <path d="M120 150 C113 126,114 108,120 100 C126 108,127 126,120 150 Z" transform="rotate(44 120 150)"></path>
+    <path d="M120 150 C113 126,114 108,120 100 C126 108,127 126,120 150 Z" transform="rotate(-44 120 150)"></path>
+  </g>
+  
+  <g>
+    <path d="M104 132 Q120 144 136 132 L131 139 Q120 146 109 139 Z" fill="#C9A24B"></path>
+    <path d="M120 116 L120 133" stroke="#16223B" stroke-width="2.2" stroke-linecap="round"></path>
+    <path d="M120 116 L132 130 L120 130 Z" fill="#FAF8F3" stroke="#16223B" stroke-width="1"></path>
+  </g>
+</svg>

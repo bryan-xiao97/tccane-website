@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Lotus and ship mark">
+  <g fill="#1B2A4A">
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(0 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(45 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(90 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(135 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(180 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(225 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(270 32 33)"></path>
+    <path d="M32 7 C25 19,25 28,32 33 C39 28,39 19,32 7 Z" transform="rotate(315 32 33)"></path>
+  </g>
+  <circle cx="32" cy="33" r="7" fill="#C9A24B"></circle>
+  <path d="M27 32 Q32 36 37 32 L35.5 34.5 Q32 37.5 28.5 34.5 Z" fill="#16223B"></path>
+  <path d="M32 25 L32 32" stroke="#16223B" stroke-width="1.4"></path>
+  <path d="M32 25 L36 31 L32 31 Z" fill="#16223B"></path>
+</svg>

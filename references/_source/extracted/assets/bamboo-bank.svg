@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="A bamboo coin bank with a falling coin and ripples">
+  
+  <ellipse cx="100" cy="150" rx="78" ry="20" fill="none" stroke="#4A78B0" stroke-width="1.5" opacity=".30"></ellipse>
+  <ellipse cx="100" cy="150" rx="56" ry="14" fill="none" stroke="#4A78B0" stroke-width="1.5" opacity=".45"></ellipse>
+  <ellipse cx="100" cy="150" rx="34" ry="9" fill="none" stroke="#4A78B0" stroke-width="1.5" opacity=".6"></ellipse>
+  
+  <g fill="none" stroke="#1B2A4A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="80" y="42" width="40" height="96" rx="18"></rect>
+    <path d="M80 74h40M80 104h40"></path>
+    <path d="M92 56h16" stroke="#3F6B47"></path>
+  </g>
+  
+  <circle cx="100" cy="26" r="8" fill="#C9A24B"></circle>
+</svg>
