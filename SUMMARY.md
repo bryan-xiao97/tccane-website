@@ -53,11 +53,25 @@ Type pairs a humanist serif for display (`Palatino Linotype` → `Spectral` fall
 
 The client logic in `app.js` is pure vanilla JS with zero dependencies:
 
-1. **Scroll reveals** — `[data-reveal]` sections (Why Join, Missions, Chapters, Resources) fade and rise into view via an `IntersectionObserver` (`threshold: 0.12`, slight bottom `rootMargin`, `0.7s` ease).
-2. **Reduced motion** — when the OS requests reduced motion, or `IntersectionObserver` is unavailable, all content is shown immediately with no animation.
-3. **No-JS safety** — the script only adds motion; with JavaScript disabled, all content remains visible.
+1. **Scroll reveals** — `[data-reveal]` sections (About, Why Join, Missions, Chapters, Resources) fade and rise into view via an `IntersectionObserver` (`threshold: 0.12`, slight bottom `rootMargin`, `0.7s` ease).
+2. **Mobile navigation** — below 900px the header collapses to a hamburger toggle with an animated dropdown panel (`aria-expanded` managed, Escape closes, auto-resets on resize). The collapse is gated behind a `.no-js` class removed in `<head>`, so without JavaScript the nav simply wraps and stays reachable.
+3. **Reduced motion** — when the OS requests reduced motion, or `IntersectionObserver` is unavailable, all content is shown immediately with no animation.
+4. **No-JS safety** — the script only adds motion and the nav toggle; with JavaScript disabled, all content remains visible.
 
-Ambient hero clouds drift via the CSS `tccaDrift` keyframe and are disabled under `prefers-reduced-motion`.
+Ambient hero clouds drift via the CSS `tccaDrift` keyframe, are pinned above the headline zone, hidden on small screens (where they would cross the copy), and disabled under `prefers-reduced-motion`.
+
+---
+
+## Visual Polish Pass (July 2026)
+
+A refinement pass over the original conversion:
+
+- **Responsive header** — sticky bar no longer stacks three rows tall on phones; hamburger + dropdown below 900px.
+- **Hero** — clouds constrained above the text zone; eyebrow switched to navy for contrast on the sky gradient (`.eyebrow--onSky`); CTAs go full-width on phones; hero art enlarged slightly; the lotus-ship sail redrawn as a curved sail with a gold pennant (the old triangle read as a mouse cursor).
+- **Aphorism band** — added the original Chinese (口說好話 心想好意 身行好事 腳走好路) using the previously unused `--tc-font-brush` / `--tc-fs-aphorism-zh` tokens, with a gold rule above; each four-character phrase wraps as a unit. A character-subset Noto Serif TC webfont backs the local kai faces.
+- **Grids** — missions, chapters, and stats now step 4 → 2 → 1 columns explicitly (auto-fit previously stranded one cell alone at tablet widths), with dividers that follow the layout.
+- **Chapter cards** — now real links (mailto with a per-chapter subject) with a visible "Email to connect →" affordance, matching their interactive hover style.
+- **Head/meta** — Google Fonts moved from a CSS `@import` to preconnected `<link>` tags; added Open Graph / Twitter card tags and a generated `assets/og-card.png` (1200×630) so shared links show a branded card; added `theme-color`.
 
 ---
 

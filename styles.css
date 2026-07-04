@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap");
-
 /* ============================================================
    TCCA Northeast — Tzu Chi Collegiate Association, NE Region
    Vanilla static conversion of a Design Component export.
@@ -7,6 +5,8 @@
    design system (colors / typography / fonts / spacing / motion).
    Component + hover classes reproduce the former design-system
    components and the DC-only `style-hover` attribute behavior.
+   Web fonts load from <link> tags in index.html (not @import)
+   so the stylesheet download doesn't serialize behind them.
    ============================================================ */
 
 /* ------------------------------------------------------------
@@ -309,11 +309,346 @@ a { color: inherit; }
 .tag--sky-outline { background: transparent; border: 1px solid var(--tc-sky); color: var(--tc-navy); }
 
 /* ------------------------------------------------------------
-   Hover helpers (replace DC-only `style-hover` attribute)
+   Components — Site header & navigation
+   Desktop: single-row sticky bar. Below 900px: compact row with
+   a hamburger toggle and a dropdown panel (JS-enhanced; without
+   JS the nav simply wraps as before via the .no-js fallback).
    ------------------------------------------------------------ */
-.nav-link { transition: color var(--tc-dur-fast) var(--tc-ease); }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 248, 243, .85);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: var(--tc-border-width) solid var(--tc-border);
+}
+.site-header__inner {
+  width: 100%;
+  max-width: var(--tc-wrap);
+  margin-inline: auto;
+  padding-inline: var(--tc-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 68px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  text-decoration: none;
+  color: var(--tc-navy);
+  min-width: 0;
+}
+.brand img { height: 40px; width: auto; flex: none; }
+.brand__text { display: flex; flex-direction: column; line-height: 1.08; min-width: 0; }
+.brand__name {
+  font-family: var(--tc-font-display);
+  font-weight: var(--tc-fw-semibold);
+  font-size: 1.12rem;
+  letter-spacing: var(--tc-tracking-tight);
+  white-space: nowrap;
+}
+.brand__region {
+  font-size: .72rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--tc-grey);
+}
+
+.site-nav { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+.nav-link {
+  text-decoration: none;
+  color: var(--tc-navy-deep);
+  font-weight: var(--tc-fw-medium);
+  font-size: .98rem;
+  white-space: nowrap;
+  transition: color var(--tc-dur-fast) var(--tc-ease);
+}
 .nav-link:hover { color: var(--tc-bamboo-deep); }
 
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.nav-toggle__bar {
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tc-navy);
+  transition: transform var(--tc-dur-fast) var(--tc-ease),
+              opacity var(--tc-dur-fast) var(--tc-ease);
+}
+.nav-open .nav-toggle__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-open .nav-toggle__bar:nth-child(2) { opacity: 0; }
+.nav-open .nav-toggle__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 899px) {
+  html:not(.no-js) .nav-toggle { display: inline-flex; }
+  html:not(.no-js) .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: .3rem var(--tc-gutter) 1.1rem;
+    background: var(--tc-paper);
+    border-bottom: var(--tc-border-width) solid var(--tc-border);
+    box-shadow: var(--tc-shadow-card);
+  }
+  html:not(.no-js) .site-header.nav-open .site-nav { display: flex; }
+  html:not(.no-js) .site-nav .nav-link {
+    padding: .85rem .15rem;
+    border-top: var(--tc-border-width) solid var(--tc-stone-soft);
+    font-size: 1.02rem;
+  }
+  html:not(.no-js) .site-nav .nav-link:first-child { border-top: 0; }
+  html:not(.no-js) .site-nav .btn { margin-top: .9rem; }
+}
+@media (max-width: 479px) {
+  .brand__name { font-size: 1rem; }
+}
+
+/* ------------------------------------------------------------
+   Components — Hero scene
+   ------------------------------------------------------------ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, #7AA6D4 0%, #A9C8E8 34%, #D2E2F2 60%, #C4D9EE 100%);
+}
+.hero__water {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32%;
+  background: linear-gradient(180deg, rgba(74,120,176,0) 0%, rgba(74,120,176,.35) 22%, rgba(27,42,74,.45) 100%);
+  z-index: 0;
+}
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--tc-wrap);
+  margin-inline: auto;
+  padding-inline: var(--tc-gutter);
+}
+.hero__layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2.5rem;
+  padding-block: clamp(3.2rem, 2rem + 6vw, 6rem);
+  min-height: min(76vh, 640px);
+}
+.hero__copy { flex: 1 1 360px; max-width: 39rem; }
+.hero__title {
+  font-family: var(--tc-font-display);
+  font-weight: var(--tc-fw-semibold);
+  font-size: var(--tc-fs-display);
+  line-height: var(--tc-lh-tight);
+  letter-spacing: var(--tc-tracking-display);
+  color: var(--tc-navy-deep);
+  margin: 0 0 1.1rem;
+}
+.hero__lead {
+  font-size: var(--tc-fs-lead);
+  color: var(--tc-navy);
+  max-width: 34rem;
+  margin: 0 0 1.9rem;
+}
+.hero__ctas { display: flex; flex-wrap: wrap; gap: .85rem; }
+.hero__art { flex: 0 1 360px; display: flex; justify-content: center; align-self: flex-end; }
+.hero__art img { width: min(400px, 84vw); }
+
+/* On the sky gradient the green eyebrow falls below readable
+   contrast; the hero uses navy instead. */
+.eyebrow--onSky { color: var(--tc-navy); }
+
+@media (max-width: 560px) {
+  .hero__layout { padding-block: 2.6rem 2.8rem; min-height: 0; gap: 1.8rem; }
+  .hero__ctas .btn { flex: 1 1 100%; }
+}
+
+/* Drifting clouds. Tops stay above the headline zone; on small
+   screens the text fills the hero, so clouds are dropped rather
+   than allowed to smear behind the copy. */
+.tcca-cloud {
+  position: absolute;
+  left: -200px;
+  border-radius: 100px;
+  filter: blur(7px);
+  z-index: 0;
+  animation: tccaDrift linear infinite;
+}
+.tcca-cloud--1 {
+  top: 9%;
+  width: 150px;
+  height: 32px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 36px -16px 0 -4px rgba(255,255,255,.92), 84px -6px 0 -10px rgba(255,255,255,.92);
+  animation-duration: 54s;
+}
+.tcca-cloud--2 {
+  top: 13%;
+  width: 120px;
+  height: 26px;
+  background: rgba(255,255,255,.78);
+  box-shadow: 30px -12px 0 -6px rgba(255,255,255,.78);
+  animation-duration: 72s;
+  animation-delay: -22s;
+}
+.tcca-cloud--3 {
+  top: 4%;
+  width: 96px;
+  height: 20px;
+  background: rgba(255,255,255,.6);
+  box-shadow: 26px -10px 0 -6px rgba(255,255,255,.6);
+  animation-duration: 90s;
+  animation-delay: -48s;
+}
+@media (max-width: 899px) {
+  .tcca-cloud { display: none; }
+}
+
+/* ------------------------------------------------------------
+   Components — Aphorism band
+   ------------------------------------------------------------ */
+.aphorism__rule {
+  display: block;
+  width: 46px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tc-gold);
+  margin: 0 auto 1.5rem;
+}
+.aphorism__zh {
+  margin: 0 auto .9rem;
+  font-family: var(--tc-font-brush);
+  font-size: var(--tc-fs-aphorism-zh);
+  letter-spacing: var(--tc-tracking-brush);
+  line-height: 1.35;
+  color: var(--tc-navy);
+}
+/* Each four-character phrase breaks as a unit, never mid-phrase. */
+.aphorism__zh span { display: inline-block; margin-inline: .3em; }
+
+/* ------------------------------------------------------------
+   Components — Stat grid (2×2 on narrow screens, no orphans)
+   ------------------------------------------------------------ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: start;
+  column-gap: clamp(1.4rem, 4vw, 2.8rem);
+  row-gap: 1.2rem;
+  margin-top: 1.9rem;
+  padding-top: 1.7rem;
+  border-top: var(--tc-border-width) solid var(--tc-stone);
+}
+@media (max-width: 620px) {
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ------------------------------------------------------------
+   Components — Missions grid
+   Explicit 4 → 2 → 1 column steps (auto-fit previously stranded
+   one cell alone at tablet widths), with dividers that follow.
+   ------------------------------------------------------------ */
+.missions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: var(--tc-border-width) solid var(--tc-stone);
+  border-bottom: var(--tc-border-width) solid var(--tc-stone);
+}
+.mission-cell {
+  text-align: center;
+  padding: clamp(1.9rem, 3vw, 2.7rem) 1.4rem;
+  transition: background-color var(--tc-dur-base) var(--tc-ease);
+}
+.mission-cell + .mission-cell { border-left: var(--tc-border-width) solid var(--tc-stone); }
+@media (max-width: 999px) {
+  .missions-grid { grid-template-columns: repeat(2, 1fr); }
+  .mission-cell + .mission-cell { border-left: 0; }
+  .mission-cell:nth-child(even) { border-left: var(--tc-border-width) solid var(--tc-stone); }
+  .mission-cell:nth-child(n+3) { border-top: var(--tc-border-width) solid var(--tc-stone); }
+}
+@media (max-width: 559px) {
+  .missions-grid { grid-template-columns: 1fr; }
+  .mission-cell:nth-child(even) { border-left: 0; }
+  .mission-cell:nth-child(n+2) { border-top: var(--tc-border-width) solid var(--tc-stone); }
+}
+
+/* ------------------------------------------------------------
+   Components — Chapter cards (real links, 4 → 2 → 1 columns)
+   ------------------------------------------------------------ */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+@media (max-width: 1019px) {
+  .chapter-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 559px) {
+  .chapter-grid { grid-template-columns: 1fr; }
+}
+.chapter-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+.chapter-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  margin: auto 0 0;
+  padding-top: 1.1rem;
+  font-size: .85rem;
+  font-weight: var(--tc-fw-semibold);
+  color: var(--tc-bamboo-deep);
+}
+.chapter-card__cta .arrow {
+  display: inline-block;
+  transition: transform var(--tc-dur-fast) var(--tc-ease);
+}
+.chapter-card:hover .chapter-card__cta .arrow { transform: translateX(3px); }
+
+/* ------------------------------------------------------------
+   Components — CTA button row (full-width buttons on phones)
+   ------------------------------------------------------------ */
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .85rem;
+  justify-content: center;
+}
+@media (max-width: 560px) {
+  .cta-row .btn { flex: 1 1 100%; }
+}
+
+/* ------------------------------------------------------------
+   Hover helpers (replace DC-only `style-hover` attribute)
+   ------------------------------------------------------------ */
 .why-row:hover { background: rgba(255,255,255,.75); }
 .mission-cell:hover { background: rgba(74,120,176,.06); }
 .ledger-row:hover { background: rgba(74,120,176,.05); }

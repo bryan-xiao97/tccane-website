@@ -27,7 +27,8 @@
   
   <g>
     <path d="M104 132 Q120 144 136 132 L131 139 Q120 146 109 139 Z" fill="#C9A24B"></path>
-    <path d="M120 116 L120 133" stroke="#16223B" stroke-width="2.2" stroke-linecap="round"></path>
-    <path d="M120 116 L132 130 L120 130 Z" fill="#FAF8F3" stroke="#16223B" stroke-width="1"></path>
+    <path d="M120 105 L120 133" stroke="#16223B" stroke-width="2.2" stroke-linecap="round"></path>
+    <path d="M122 107 C 131.5 111, 136 121, 133.5 130 L122 130 Z" fill="#FAF8F3" stroke="#16223B" stroke-width="1" stroke-linejoin="round"></path>
+    <path d="M120 104.5 L127.5 107 L120 109.5 Z" fill="#C9A24B"></path>
   </g>
 </svg>
