@@ -1,31 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tzu Chi Collegiate Association · Northeast Region</title>
   <meta name="description" content="Tzu Chi Collegiate Association, Northeast Region — college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, open to every background.">
+  <meta name="theme-color" content="#FAF8F3">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Tzu Chi Collegiate Association · Northeast Region">
+  <meta property="og:description" content="College students across the Northeast turning compassion into everyday service. Backed by a global humanitarian family, open to every background.">
+  <meta property="og:url" content="https://bryan-xiao97.github.io/tccane-website-v2/">
+  <meta property="og:image" content="https://bryan-xiao97.github.io/tccane-website-v2/assets/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="icon" href="assets/lotus-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Source+Sans+3:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500&text=%E5%8F%A3%E8%AA%AA%E5%A5%BD%E8%A9%B1%E5%BF%83%E6%83%B3%E6%84%8F%E8%BA%AB%E8%A1%8C%E4%BA%8B%E8%85%B3%E8%B5%B0%E8%B7%AF&display=swap">
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.remove('no-js');</script>
 </head>
 <body>
 
 <div style="background:var(--tc-surface-page)">
 
-  <header style="position:sticky;top:0;z-index:50;background:rgba(250,248,243,.85);backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--tc-border)">
-    <div style="width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;min-height:68px">
-      <a href="#top" style="display:inline-flex;align-items:center;gap:.7rem;text-decoration:none;color:var(--tc-navy)">
-        <img src="assets/tcca-emblem.png" alt="Tzu Chi Collegiate Association emblem" style="height:40px;width:auto">
-        <span style="display:flex;flex-direction:column;line-height:1.08">
-          <span style="font-family:var(--tc-font-display);font-weight:600;font-size:1.12rem;letter-spacing:-0.01em">Tzu Chi Collegiate Association</span>
-          <span style="font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--tc-grey)">Northeast Region</span>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="#top" class="brand">
+        <img src="assets/tcca-emblem.png" alt="Tzu Chi Collegiate Association emblem">
+        <span class="brand__text">
+          <span class="brand__name">Tzu Chi Collegiate Association</span>
+          <span class="brand__region">Northeast Region</span>
         </span>
       </a>
-      <nav style="display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap">
-        <a href="#about" class="nav-link" style="text-decoration:none;color:var(--tc-navy-deep);font-weight:500;font-size:.98rem;white-space:nowrap">About</a>
-        <a href="#why" class="nav-link" style="text-decoration:none;color:var(--tc-navy-deep);font-weight:500;font-size:.98rem;white-space:nowrap">Why Join</a>
-        <a href="#missions" class="nav-link" style="text-decoration:none;color:var(--tc-navy-deep);font-weight:500;font-size:.98rem;white-space:nowrap">Missions</a>
-        <a href="#chapters" class="nav-link" style="text-decoration:none;color:var(--tc-navy-deep);font-weight:500;font-size:.98rem;white-space:nowrap">Chapters</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation menu">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#why" class="nav-link">Why Join</a>
+        <a href="#missions" class="nav-link">Missions</a>
+        <a href="#chapters" class="nav-link">Chapters</a>
         <a class="btn btn--primary btn--sm" href="#involved" style="white-space:nowrap">Get Involved</a>
       </nav>
     </div>
@@ -34,24 +55,24 @@
   <main id="top">
 
     <!-- HERO — scene layout -->
-    <section style="position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(180deg,#7AA6D4 0%,#A9C8E8 34%,#D2E2F2 60%,#C4D9EE 100%)">
-      <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:32%;background:linear-gradient(180deg,rgba(74,120,176,0) 0%,rgba(74,120,176,.35) 22%,rgba(27,42,74,.45) 100%);z-index:0"></div>
-      <span class="tcca-cloud" aria-hidden="true" style="position:absolute;top:14%;left:-200px;width:150px;height:32px;border-radius:100px;background:rgba(255,255,255,.92);filter:blur(7px);box-shadow:36px -16px 0 -4px rgba(255,255,255,.92),84px -6px 0 -10px rgba(255,255,255,.92);z-index:0;animation:tccaDrift 54s linear infinite"></span>
-      <span class="tcca-cloud" aria-hidden="true" style="position:absolute;top:30%;left:-180px;width:120px;height:26px;border-radius:100px;background:rgba(255,255,255,.78);filter:blur(7px);box-shadow:30px -12px 0 -6px rgba(255,255,255,.78);z-index:0;animation:tccaDrift 72s linear infinite;animation-delay:-22s"></span>
-      <span class="tcca-cloud" aria-hidden="true" style="position:absolute;top:8%;left:-160px;width:96px;height:20px;border-radius:100px;background:rgba(255,255,255,.6);filter:blur(7px);box-shadow:26px -10px 0 -6px rgba(255,255,255,.6);z-index:0;animation:tccaDrift 90s linear infinite;animation-delay:-48s"></span>
-      <div style="position:relative;z-index:2;width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:2.5rem;padding-block:clamp(3.2rem,2rem + 6vw,6rem);min-height:min(76vh,640px)">
-          <div style="flex:1 1 360px;max-width:39rem">
-            <p class="eyebrow">Tzu Chi Collegiate Association · Northeast</p>
-            <h1 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-display);line-height:1.08;letter-spacing:-0.015em;color:var(--tc-navy-deep);margin:0 0 1.1rem">Great Love, carried onto campus.</h1>
-            <p style="font-size:var(--tc-fs-lead);color:var(--tc-navy);max-width:34rem;margin:0 0 1.9rem">We are Tzu Ching — college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, and open to every background.</p>
-            <div style="display:flex;flex-wrap:wrap;gap:.85rem">
+    <section class="hero">
+      <div class="hero__water" aria-hidden="true"></div>
+      <span class="tcca-cloud tcca-cloud--1" aria-hidden="true"></span>
+      <span class="tcca-cloud tcca-cloud--2" aria-hidden="true"></span>
+      <span class="tcca-cloud tcca-cloud--3" aria-hidden="true"></span>
+      <div class="hero__inner">
+        <div class="hero__layout">
+          <div class="hero__copy">
+            <p class="eyebrow eyebrow--onSky">Tzu Chi Collegiate Association · Northeast</p>
+            <h1 class="hero__title">Great Love, carried onto campus.</h1>
+            <p class="hero__lead">We are Tzu Ching — college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, and open to every background.</p>
+            <div class="hero__ctas">
               <a class="btn btn--primary btn--lg" href="#involved">Become a Tzu Ching</a>
               <a class="btn btn--secondary btn--lg" href="#chapters">Find your chapter</a>
             </div>
           </div>
-          <div aria-hidden="true" style="flex:0 1 340px;display:flex;justify-content:center;align-self:end">
-            <img src="assets/lotus-ship-hero.svg" alt="" style="width:min(360px,84vw)">
+          <div class="hero__art" aria-hidden="true">
+            <img src="assets/lotus-ship-hero.svg" alt="">
           </div>
         </div>
       </div>
@@ -59,12 +80,14 @@
 
     <!-- APHORISM -->
     <figure style="margin:0;text-align:center;background:var(--tc-white);border-block:1px solid var(--tc-border);padding:clamp(2rem,1.5rem + 3vw,3.5rem) var(--tc-gutter)">
+      <span class="aphorism__rule" aria-hidden="true"></span>
+      <p class="aphorism__zh" lang="zh-Hant"><span>口說好話</span> <span>心想好意</span> <span>身行好事</span> <span>腳走好路</span></p>
       <blockquote style="margin:0 auto;max-width:34ch;font-family:var(--tc-font-display);font-style:italic;font-size:var(--tc-fs-aphorism-en);color:var(--tc-navy-deep);line-height:var(--tc-lh-snug)">“Speak kind words, think good thoughts, do good deeds, and walk the right path.”</blockquote>
       <figcaption style="margin-top:1.1rem;font-size:var(--tc-fs-caption);letter-spacing:var(--tc-tracking-caps);text-transform:uppercase;color:var(--tc-text-subtle)">Dharma Master Cheng Yen</figcaption>
     </figure>
 
     <!-- ABOUT -->
-    <section id="about" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem)">
+    <section id="about" data-reveal="" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem)">
       <div style="width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:clamp(2rem,5vw,4.5rem)">
           <div style="flex:1 1 380px">
@@ -74,7 +97,7 @@
               <p style="margin:0 0 1rem">The Tzu Chi Collegiate Association is the youth branch of Tzu Chi USA, a global humanitarian organization founded in 1966 on Buddhist principles of compassion, relief, and mindfulness. Members are affectionately called <strong style="color: var(--tc-navy-deep); font-weight: 600;">Tzu Ching</strong>, “Tzu Chi Youth.”</p>
               <p style="margin:0">While our roots are inspired by Buddhist philosophy, TCCA is completely secular in practice and open to students of all backgrounds. Whether you are religious, spiritual, agnostic, or atheist, everyone is welcome. All you need is the desire to make the world a little better.</p>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:clamp(1.4rem,4vw,2.8rem);margin-top:1.9rem;padding-top:1.7rem;border-top:1px solid var(--tc-stone)">
+            <div class="stat-grid">
               <div class="stat">
                 <div class="stat__value">1966</div>
                 <div class="stat__label">Founded in Hualien</div>
@@ -156,8 +179,8 @@
           <h2 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-h2);line-height:1.15;letter-spacing:-0.01em;color:var(--tc-navy);margin:0">The work we carry forward.</h2>
           <p style="margin:1rem auto 0;color:var(--tc-text-muted);max-width:52ch">Every Tzu Ching commits to four founding missions — the ground on which all of our service stands.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border-top:1px solid var(--tc-stone);border-bottom:1px solid var(--tc-stone)">
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
+        <div class="missions-grid">
+          <div class="mission-cell">
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--tc-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:54px;height:54px;margin:0 auto 1.2rem">
               <path d="M24 19c-2-4-9-4-9 2 0 5 9 10 9 10s9-5 9-10c0-6-7-6-9-2Z"></path>
               <path d="M9 33c5 5 25 5 30 0"></path>
@@ -165,7 +188,7 @@
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Charity</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Direct relief and recovery for families in hardship — given with dignity, never pity.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;border-left:1px solid var(--tc-stone);transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell">
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--tc-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:54px;height:54px;margin:0 auto 1.2rem">
               <circle cx="24" cy="24" r="13"></circle>
               <path d="M24 18v12M18 24h12"></path>
@@ -173,7 +196,7 @@
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Medicine</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Free clinics and health outreach that bring care to those who cannot reach it.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;border-left:1px solid var(--tc-stone);transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell">
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--tc-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:54px;height:54px;margin:0 auto 1.2rem">
               <path d="M24 16c-4-3-12-3-15-1v20c3-2 11-2 15 1 4-3 12-3 15-1V15c-3-2-11-2-15 1Z"></path>
               <path d="M24 16v21"></path>
@@ -181,7 +204,7 @@
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Education</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Tutoring, mentorship, and scholarships that open doors for underserved students.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;border-left:1px solid var(--tc-stone);transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell">
             <svg viewBox="0 0 48 48" fill="none" stroke="var(--tc-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:54px;height:54px;margin:0 auto 1.2rem">
               <path d="M31 11l6 6-18 18-7 1 1-7Z"></path>
               <path d="M12 37c3 1 6 0 7-3"></path>
@@ -201,27 +224,31 @@
           <h2 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-h2);line-height:1.15;letter-spacing:-0.01em;color:var(--tc-navy);margin:0">Find your community in the Northeast.</h2>
           <p style="margin-top:1rem;color:var(--tc-text-muted);max-width:62ch">The Northeast Region supports campus chapters at NYU and Stony Brook, plus community chapters in Boston and New York City for students whose schools don’t yet have a dedicated TCCA club.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(1rem,2vw,1.5rem)">
-          <div class="card card--interactive">
+        <div class="chapter-grid">
+          <a class="card card--interactive chapter-card" href="mailto:tcca.neregion@us.tzuchi.org?subject=Joining%20TCCA%20at%20NYU">
             <div style="margin-bottom:.8rem"><span class="tag tag--accent">Campus chapter</span></div>
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .35rem">New York University</h3>
             <p style="margin:0;font-size:.95rem;color:var(--tc-text-subtle)">New York City</p>
-          </div>
-          <div class="card card--interactive">
+            <p class="chapter-card__cta">Email to connect <span class="arrow" aria-hidden="true">→</span></p>
+          </a>
+          <a class="card card--interactive chapter-card" href="mailto:tcca.neregion@us.tzuchi.org?subject=Joining%20TCCA%20at%20Stony%20Brook">
             <div style="margin-bottom:.8rem"><span class="tag tag--accent">Campus chapter</span></div>
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .35rem">Stony Brook University</h3>
             <p style="margin:0;font-size:.95rem;color:var(--tc-text-subtle)">Long Island, NY</p>
-          </div>
-          <div class="card card--interactive">
+            <p class="chapter-card__cta">Email to connect <span class="arrow" aria-hidden="true">→</span></p>
+          </a>
+          <a class="card card--interactive chapter-card" href="mailto:tcca.neregion@us.tzuchi.org?subject=Joining%20the%20Boston%20community%20chapter">
             <div style="margin-bottom:.8rem"><span class="tag tag--sky-outline">Community chapter</span></div>
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .35rem">Boston</h3>
             <p style="margin:0;font-size:.95rem;color:var(--tc-text-subtle)">For students across Greater Boston</p>
-          </div>
-          <div class="card card--interactive">
+            <p class="chapter-card__cta">Email to connect <span class="arrow" aria-hidden="true">→</span></p>
+          </a>
+          <a class="card card--interactive chapter-card" href="mailto:tcca.neregion@us.tzuchi.org?subject=Joining%20the%20NYC%20community%20chapter">
             <div style="margin-bottom:.8rem"><span class="tag tag--sky-outline">Community chapter</span></div>
             <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .35rem">New York City</h3>
             <p style="margin:0;font-size:.95rem;color:var(--tc-text-subtle)">For students across the five boroughs</p>
-          </div>
+            <p class="chapter-card__cta">Email to connect <span class="arrow" aria-hidden="true">→</span></p>
+          </a>
         </div>
         <p style="margin-top:1.6rem;font-size:.95rem;color:var(--tc-text-muted)">No chapter at your school? You can still join a community chapter — or we’ll help you start one. <a href="#involved" class="text-link" style="color:var(--tc-bamboo-deep);font-weight:600;text-decoration:none">Reach out below.</a></p>
       </div>
@@ -305,7 +332,7 @@
           <p class="eyebrow eyebrow--onInverse">Get involved</p>
           <h2 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-h2);line-height:1.15;color:var(--tc-white);margin:0 0 1rem">Lend your hands to Great Love.</h2>
           <p style="color:var(--tc-cloud);max-width:52ch;margin:0 auto 2rem">Whether you want to join a chapter, start one at your school, or simply ask a question — the Northeast Regional Advisors would love to hear from you.</p>
-          <div style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center">
+          <div class="cta-row">
             <a class="btn btn--onNavy btn--lg" href="mailto:tcca.neregion@us.tzuchi.org">Email an advisor</a>
             <a class="btn btn--onNavy btn--lg" href="https://www.instagram.com/neregiontcca/">Instagram</a>
             <a class="btn btn--onNavy btn--lg" href="https://discord.gg/hXS6kzUc">Discord</a>
