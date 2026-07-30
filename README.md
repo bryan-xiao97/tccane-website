@@ -6,8 +6,8 @@ Static marketing site for the **Tzu Chi Collegiate Association, Northeast Region
 
 - `index.html` — the full page (header, hero, aphorism, about, why-join, four missions, chapters, resources, get-involved, footer).
 - `styles.css` — design tokens, base reset, keyframes, and component/hover classes.
-- `app.js` — scroll-reveal animation (IntersectionObserver), reduced-motion aware.
-- `assets/` — SVG illustrations, icons, and the TCCA emblem.
+- `app.js` — scroll-reveal animation (IntersectionObserver) and the mobile nav toggle, reduced-motion aware.
+- `assets/` — SVG illustrations, icons, the TCCA emblem, and the social share card (`og-card.png`).
 - `references/` — content source notes and a provenance archive of the original design export under `references/_source/`.
 
 ## Run locally
