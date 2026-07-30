@@ -1,16 +1,49 @@
 /* ============================================================
    TCCA Northeast — interface logic (vanilla JS, no dependencies)
    Ported from the original Design Component `componentDidMount`.
-   The single behavior is a scroll-triggered fade-and-rise reveal
-   on [data-reveal] sections, with full prefers-reduced-motion and
-   no-IntersectionObserver fallbacks. Content stays visible if JS
-   is disabled (this script only adds motion, never hides content
-   permanently).
+   Two behaviors: a scroll-triggered fade-and-rise reveal on
+   [data-reveal] sections (prefers-reduced-motion and
+   no-IntersectionObserver aware), and the small-screen nav
+   toggle. Content stays visible if JS is disabled — the reveal
+   only adds motion, and the nav collapse is gated behind the
+   .no-js class removed in <head>.
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
   initScrollReveals();
+  initNavToggle();
 });
+
+function initNavToggle() {
+  const header = document.querySelector('.site-header');
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (!header || !toggle || !nav) return;
+
+  const setOpen = (open) => {
+    header.classList.toggle('nav-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+
+  toggle.addEventListener('click', () => {
+    setOpen(!header.classList.contains('nav-open'));
+  });
+
+  // Close after choosing a destination.
+  nav.addEventListener('click', (e) => {
+    if (e.target.closest('a')) setOpen(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // Reset if the viewport grows past the collapse breakpoint.
+  const wide = window.matchMedia('(min-width: 900px)');
+  const onChange = (m) => { if (m.matches) setOpen(false); };
+  if (wide.addEventListener) wide.addEventListener('change', onChange);
+  else if (wide.addListener) wide.addListener(onChange);
+}
 
 function initScrollReveals() {
   const els = document.querySelectorAll('[data-reveal]');
