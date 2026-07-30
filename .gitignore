@@ -8,3 +8,10 @@ node_modules/
 
 # Logs
 *.log
+
+# Photo masters (~33 MB of full-resolution camera originals).
+# Only the derivatives built by tools/build-photos.py are committed; the
+# masters are archived in the chapter Drive. Keeping them out of history
+# matters — git never forgets a 33 MB blob, and one master carries GPS
+# coordinates for a private home.
+assets/photos/_originals/
