@@ -650,10 +650,181 @@ a { color: inherit; }
    Hover helpers (replace DC-only `style-hover` attribute)
    ------------------------------------------------------------ */
 .why-row:hover { background: rgba(255,255,255,.75); }
-.mission-cell:hover { background: rgba(74,120,176,.06); }
+/* Composited rather than translucent: the cell now paints its own opaque
+   background so the grid's divider colour cannot bleed through the tint. */
+.mission-cell:hover { background-color: color-mix(in srgb, var(--tc-accent-sky) 6%, var(--tc-surface-page)); }
 .ledger-row:hover { background: rgba(74,120,176,.05); }
 
 .text-link:hover { text-decoration: underline; }
 
 .footer-link { transition: color var(--tc-dur-fast) var(--tc-ease); }
 .footer-link:hover { color: var(--tc-white); }
+
+/* ------------------------------------------------------------
+   Components — Photo figure
+   Shared by the photo band and the two in-context placements.
+   The cell owns the aspect ratio and the image fills it, so crops
+   stay predictable no matter what the source dimensions are.
+   ------------------------------------------------------------ */
+.photo-figure {
+  margin: 0;
+  position: relative;
+}
+.photo-figure__frame {
+  display: block;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--tc-radius);
+  background: var(--tc-surface-sunken);
+}
+.photo-figure__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-figure__caption {
+  margin-top: .7rem;
+  font-family: var(--tc-font-body);
+  font-size: var(--tc-fs-caption);
+  line-height: var(--tc-lh-snug);
+  color: var(--tc-text-subtle);
+}
+
+/* Overlay variant — used on the band. Lifting the caption out of the
+   flow keeps the grid math exact (captions would otherwise add an
+   unknown height to each row) and reads better over photography. */
+.photo-figure--overlay .photo-figure__caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  margin: 0;
+  padding: 2.4rem .95rem .8rem;
+  color: var(--tc-white);
+  background: linear-gradient(180deg, rgba(22,34,59,0) 0%, rgba(22,34,59,.74) 62%, rgba(22,34,59,.88) 100%);
+  border-radius: 0 0 var(--tc-radius) var(--tc-radius);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------
+   Components — Photo band ("Life in the chapters")
+   Asymmetric editorial grid. Every cell resolves to a gentle
+   landscape crop so group photos never lose heads: the three
+   upper cells land on 3:2, the lower strip on 5:2.
+   ------------------------------------------------------------ */
+.photo-band__grid {
+  display: grid;
+  gap: clamp(.7rem, 1.4vw, 1.1rem);
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "anchor"
+    "sideA"
+    "sideB"
+    "wide";
+}
+.photo-band__cell--anchor { grid-area: anchor; }
+.photo-band__cell--a      { grid-area: sideA; }
+.photo-band__cell--b      { grid-area: sideB; }
+.photo-band__cell--wide   { grid-area: wide; }
+
+/* Single column below 900px — every cell keeps the source 4:3. */
+.photo-band__cell .photo-figure { aspect-ratio: 4 / 3; }
+
+@media (min-width: 900px) {
+  .photo-band__grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "anchor anchor sideA"
+      "anchor anchor sideB"
+      "wide   wide   wide";
+  }
+  .photo-band__cell--anchor .photo-figure { aspect-ratio: 3 / 2; }
+  .photo-band__cell--wide   .photo-figure { aspect-ratio: 5 / 2; }
+
+  /* The side cells take their height from the anchor's two-row span.
+     Absolute positioning gives them no intrinsic height of their own,
+     which is what makes that hand-off deterministic — they resolve to
+     roughly 3:2, matching the anchor. */
+  .photo-band__cell--a,
+  .photo-band__cell--b { position: relative; }
+  .photo-band__cell--a .photo-figure,
+  .photo-band__cell--b .photo-figure {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+}
+
+/* ------------------------------------------------------------
+   Components — Four Missions grid
+   Dividers are drawn by a 1px grid gap over a stone background rather
+   than a border on each cell. Cell borders only work when you know
+   where the row breaks; this grid reflows from four columns to one, so
+   a border-left leaves a dangling rule down the side of stacked cells.
+
+   That technique needs every track filled, or the empty ones paint
+   themselves with the divider colour. So the column count is fixed at
+   1, 2 and 4 rather than left to auto-fit — with four cells those are
+   the only counts that divide evenly. auto-fit resolves to three
+   columns around tablet width and strands two empty tracks.
+   ------------------------------------------------------------ */
+.mission-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--tc-border-width);
+  background: var(--tc-divider);
+  border-block: var(--tc-border-width) solid var(--tc-divider);
+}
+@media (min-width: 560px) {
+  .mission-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 940px) {
+  .mission-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.mission-cell {
+  background: var(--tc-surface-page);
+}
+
+/* ------------------------------------------------------------
+   Components — Mission cell media
+   The Four Missions cells carry a photo where the line-art icon
+   used to sit. The icon survives as a medallion straddling the
+   photo's lower edge — the overlap is what gives this row the
+   layering the flat icon-and-rule version lacked.
+   ------------------------------------------------------------ */
+.mission-cell__media {
+  position: relative;
+  /* Clears the medallion's 27px overhang and restores roughly the
+     same icon-to-heading gap the section had before. */
+  margin-bottom: 2.9rem;
+}
+.mission-cell__frame {
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--tc-radius);
+  background: var(--tc-surface-sunken);
+}
+.mission-cell__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mission-cell__badge {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  width: 54px;
+  height: 54px;
+  border-radius: var(--tc-radius-pill);
+  background: var(--tc-surface-card);
+  border: var(--tc-border-width) solid var(--tc-border);
+  box-shadow: var(--tc-shadow-soft);
+  display: grid;
+  place-items: center;
+}
+.mission-cell__badge svg {
+  width: 28px;
+  height: 28px;
+}
+
