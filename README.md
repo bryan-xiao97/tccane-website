@@ -43,3 +43,17 @@ python -m http.server 8000
 Then open http://localhost:8000.
 
 See `SUMMARY.md` for design notes and the conversion provenance.
+
+## Middleware (Cloudflare Pages Function)
+
+Volunteer registration API for the future interest form. Spec: `references/TDDs/Interest Form Bloomerang Volunteer - Technical Design - 08.02.html`.
+
+```bash
+npm install
+npm test
+cp .dev.vars.example .dev.vars   # fill when you have keys; TURNSTILE_SKIP=true for local
+npx wrangler pages dev . --compatibility-date=2024-11-01
+# POST http://127.0.0.1:8788/api/interest
+```
+
+Secrets (production): `VOLUNTEER_API_TOKEN`, `TURNSTILE_SECRET_KEY` via `wrangler pages secret put`. Vars: `VOLUNTEER_ORG_ID`. Never commit `.dev.vars`.

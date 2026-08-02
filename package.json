@@ -1,0 +1,14 @@
+{
+  "name": "tccane-website-v2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "pages:dev": "wrangler pages dev . --compatibility-date=2024-11-01"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "wrangler": "^4.28.0"
+  }
+}

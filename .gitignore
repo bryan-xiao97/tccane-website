@@ -15,3 +15,11 @@ node_modules/
 # matters — git never forgets a 33 MB blob, and one master carries GPS
 # coordinates for a private home.
 assets/photos/_originals/
+
+# SDD scratch
+references/progress/
+
+# Middleware (Cloudflare Pages Functions) local tooling
+.dev.vars
+.wrangler/
+dist/
