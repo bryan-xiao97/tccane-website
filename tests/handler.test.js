@@ -112,6 +112,61 @@ describe('handleInterestPost', () => {
     expect(res.status).toBe(500);
   });
 
+  test('500 when RATE_LIMIT_KV missing', async () => {
+    const env = envBase({ RATE_LIMIT_KV: undefined });
+    const res = await handleInterestPost(post(valid), env, {
+      fetchImpl: createMockFetch([]),
+      nowMs: 1,
+    });
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  });
+
+  test('500 when DLQ_KV missing', async () => {
+    const env = envBase({ DLQ_KV: undefined });
+    const res = await handleInterestPost(post(valid), env, {
+      fetchImpl: createMockFetch([]),
+      nowMs: 1,
+    });
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  });
+
+  test('500 when Turnstile secret missing and skip off', async () => {
+    const env = envBase({ TURNSTILE_SKIP: 'false', TURNSTILE_SECRET_KEY: '' });
+    const res = await handleInterestPost(post(valid), env, {
+      fetchImpl: createMockFetch([]),
+      nowMs: 1,
+    });
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  });
+
+  test('503 when Volunteer 503 and DLQ put fails', async () => {
+    const badKv = {
+      async get() {
+        return null;
+      },
+      async put() {
+        throw new Error('kv down');
+      },
+      async list() {
+        return { keys: [] };
+      },
+      async delete() {},
+    };
+    const env = envBase({ DLQ_KV: badKv });
+    const fetchImpl = createMockFetch([
+      {
+        match: (url) => url.includes('/users'),
+        response: jsonResponse(503, { error: 'down' }),
+      },
+    ]);
+    const res = await handleInterestPost(post(valid), env, { fetchImpl, nowMs: 5_000 });
+    expect(res.status).toBe(503);
+    expect(await res.json()).toEqual({ error: 'Registration temporarily unavailable' });
+  });
+
   test('502 when Volunteer 400 non-retryable', async () => {
     const fetchImpl = createMockFetch([
       { match: () => true, response: jsonResponse(400, { error: 'bad' }) },

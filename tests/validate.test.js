@@ -74,6 +74,19 @@ describe('validateInterestBody', () => {
     expect(r.status).toBe(400);
   });
 
+  test('rejects non-string honeypot company', () => {
+    const base = {
+      firstName: 'A',
+      lastName: 'B',
+      email: 'a@b.co',
+      turnstileToken: 't',
+    };
+    expect(validateInterestBody({ ...base, company: 1 }).ok).toBe(false);
+    expect(validateInterestBody({ ...base, company: true }).ok).toBe(false);
+    expect(validateInterestBody({ ...base, company: 1 }).status).toBe(400);
+    expect(validateInterestBody({ ...base, company: true }).error).toBe('Rejected');
+  });
+
   test('allows empty string honeypot company', () => {
     const r = validateInterestBody({
       firstName: 'A',
