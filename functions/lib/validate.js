@@ -15,8 +15,10 @@ export function validateInterestBody(raw) {
     }
   }
 
-  if (typeof raw.company === 'string' && raw.company.trim() !== '') {
-    return { ok: false, status: 400, error: 'Rejected' };
+  if ('company' in raw) {
+    if (typeof raw.company !== 'string' || raw.company.trim() !== '') {
+      return { ok: false, status: 400, error: 'Rejected' };
+    }
   }
 
   const firstName = typeof raw.firstName === 'string' ? raw.firstName.trim() : '';

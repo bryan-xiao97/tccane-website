@@ -33,6 +33,16 @@ export async function handleInterestPost(request, env, deps = {}) {
     return json(500, { error: 'Server misconfigured' });
   }
 
+  if (!env.RATE_LIMIT_KV || !env.DLQ_KV) {
+    warn('misconfigured', { hasRateLimitKv: Boolean(env.RATE_LIMIT_KV), hasDlqKv: Boolean(env.DLQ_KV) });
+    return json(500, { error: 'Server misconfigured' });
+  }
+
+  if (env.TURNSTILE_SKIP !== 'true' && !env.TURNSTILE_SECRET_KEY) {
+    warn('misconfigured', { hasTurnstileSecret: false });
+    return json(500, { error: 'Server misconfigured' });
+  }
+
   let raw;
   try {
     raw = await request.json();
@@ -48,8 +58,10 @@ export async function handleInterestPost(request, env, deps = {}) {
   const fp = emailFingerprint(input.email);
   const ip = clientIp(request);
 
-  const limit = parseInt(env.RATE_LIMIT_MAX || '5', 10);
-  const windowSeconds = parseInt(env.RATE_LIMIT_WINDOW_SECONDS || '600', 10);
+  let limit = parseInt(env.RATE_LIMIT_MAX || '5', 10);
+  if (!Number.isFinite(limit) || limit < 1) limit = 5;
+  let windowSeconds = parseInt(env.RATE_LIMIT_WINDOW_SECONDS || '600', 10);
+  if (!Number.isFinite(windowSeconds) || windowSeconds < 1) windowSeconds = 600;
   const rl = await checkRateLimit({
     kv: env.RATE_LIMIT_KV,
     ip,
@@ -92,12 +104,17 @@ export async function handleInterestPost(request, env, deps = {}) {
   }
 
   if (result.retryable) {
-    await enqueueFailure({
-      kv: env.DLQ_KV,
-      payload: input,
-      error: result.error,
-      nowMs,
-    });
+    try {
+      await enqueueFailure({
+        kv: env.DLQ_KV,
+        payload: input,
+        error: result.error,
+        nowMs,
+      });
+    } catch (err) {
+      warn('dlq_enqueue_failed', { fp, error: String(err?.message || err) });
+      return json(503, { error: 'Registration temporarily unavailable' });
+    }
     warn('volunteer_retryable_enqueued', { fp, status: result.status });
     return json(200, { ok: true, status: 'accepted' });
   }
