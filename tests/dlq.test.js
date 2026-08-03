@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { enqueueFailure, listDue, markAttempt } from '../functions/lib/dlq.js';
+import { enqueueFailure, listDue, markAttempt, poisonRecord } from '../functions/lib/dlq.js';
 import { createMemoryKv } from './helpers/memory-kv.js';
 
 describe('dlq', () => {
@@ -87,4 +87,21 @@ describe('dlq', () => {
     }
     expect(poisoned).toBe(true);
   });
+
+  test('poisonRecord marks poisoned and skips listDue', async () => {
+    const kv = createMemoryKv();
+    const { id } = await enqueueFailure({
+      kv,
+      payload: { firstName: 'A', lastName: 'B', email: 'a@b.co' },
+      error: 'x',
+      nowMs: 0,
+    });
+    await poisonRecord({ kv, id, error: 'permanent:bad', nowMs: 1000 });
+    const rec = await kv.get('dlq:' + id, 'json');
+    expect(rec.poisoned).toBe(true);
+    expect(rec.lastError).toBe('permanent:bad');
+    expect(rec.nextAttemptAt).toBe(1000 + 86_400_000);
+    expect(await listDue({ kv, nowMs: 1000, limit: 10 })).toHaveLength(0);
+  });
 });
+
