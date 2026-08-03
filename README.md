@@ -66,3 +66,12 @@ secrets (every 5 minutes), or call it from an authenticated ops route later.
 Until cron is wired, failed registrations remain in KV for manual replay:
 `npx wrangler kv key list --binding=DLQ_KV`.
 
+### When the Volunteer API key arrives
+
+1. `npx wrangler kv namespace create RATE_LIMIT_KV` and `DLQ_KV`; paste ids into `wrangler.toml`.
+2. `npx wrangler pages secret put VOLUNTEER_API_TOKEN`
+3. `npx wrangler pages secret put TURNSTILE_SECRET_KEY`
+4. Set `VOLUNTEER_ORG_ID` in Pages project variables (production). Ensure `TURNSTILE_SKIP` is **unset** in production.
+5. Deploy Pages project; confirm `POST /api/interest` with a real Turnstile token creates a user in Volunteer.
+6. Wire cron Worker for `processDlqBatch` sharing `DLQ_KV`.
+

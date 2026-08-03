@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "pages:dev": "wrangler pages dev . --compatibility-date=2024-11-01"
+    "pages:dev": "wrangler pages dev . --compatibility-date=2024-11-01",
+    "smoke": "bash scripts/smoke-interest.sh"
   },
   "devDependencies": {
     "vitest": "^3.2.4",
