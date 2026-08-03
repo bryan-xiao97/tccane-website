@@ -16,3 +16,10 @@ preview_id = "REPLACE_WITH_DLQ_KV_PREVIEW_ID"
 VOLUNTEER_API_BASE = "https://volunteer.bloomerang.co/api"
 RATE_LIMIT_MAX = "5"
 RATE_LIMIT_WINDOW_SECONDS = "600"
+
+# DLQ retry: processDlqBatch in functions/scheduled/retry-dlq.js is unit-tested
+# and exports a Workers `scheduled` default. Pages Functions do not run cron
+# natively — deploy a small Worker with the same DLQ_KV + secrets and:
+#   [triggers]
+#   crons = ["*/5 * * * *"]
+# Or invoke processDlqBatch from an authenticated ops route.

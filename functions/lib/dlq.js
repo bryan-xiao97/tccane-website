@@ -65,3 +65,13 @@ export async function markAttempt({ kv, id, success, error, nowMs, maxAttempts =
   await kv.put(key, JSON.stringify(rec));
   return { done: false, poisoned: false };
 }
+
+export async function poisonRecord({ kv, id, error, nowMs }) {
+  const key = PREFIX + id;
+  const rec = await kv.get(key, 'json');
+  if (!rec) return;
+  rec.poisoned = true;
+  rec.lastError = String(error || '').slice(0, 300);
+  rec.nextAttemptAt = nowMs + 86_400_000;
+  await kv.put(key, JSON.stringify(rec));
+}

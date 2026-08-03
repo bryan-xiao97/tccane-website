@@ -57,3 +57,12 @@ npx wrangler pages dev . --compatibility-date=2024-11-01
 ```
 
 Secrets (production): `VOLUNTEER_API_TOKEN`, `TURNSTILE_SECRET_KEY` via `wrangler pages secret put`. Vars: `VOLUNTEER_ORG_ID`. Never commit `.dev.vars`.
+
+### DLQ retry
+
+`processDlqBatch` lives in `functions/scheduled/retry-dlq.js`. Wire it as a
+Cron Trigger on a small Worker that shares the `DLQ_KV` binding and the same
+secrets (every 5 minutes), or call it from an authenticated ops route later.
+Until cron is wired, failed registrations remain in KV for manual replay:
+`npx wrangler kv key list --binding=DLQ_KV`.
+
