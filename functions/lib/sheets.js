@@ -28,7 +28,11 @@ async function getBearerToken(getAccessToken) {
   let token;
   try {
     token = await getAccessToken();
-  } catch {
+  } catch (err) {
+    const status = Number(err?.response?.status);
+    if (Number.isInteger(status) && !(status >= 500 || status === 429)) {
+      return { ok: false, retryable: false, status, error: `Google token HTTP ${status}` };
+    }
     return { ok: false, retryable: true, status: 0, error: 'Google token error' };
   }
   return { ok: true, token };

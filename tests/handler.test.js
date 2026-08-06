@@ -147,6 +147,16 @@ describe('handleInterestPost', () => {
     expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
+  test('500 when service account secret is malformed', async () => {
+    const env = envBase({ GOOGLE_SERVICE_ACCOUNT: 'not-json' });
+    const res = await handleInterestPost(post(valid), env, {
+      fetchImpl: createMockFetch([]),
+      ...deps(),
+    });
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  });
+
   test('500 when spreadsheet id missing', async () => {
     const env = envBase({ GOOGLE_SPREADSHEET_ID: '' });
     const res = await handleInterestPost(post(valid), env, {
