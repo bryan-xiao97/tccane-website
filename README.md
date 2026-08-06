@@ -46,32 +46,32 @@ See `SUMMARY.md` for design notes and the conversion provenance.
 
 ## Middleware (Cloudflare Pages Function)
 
-Volunteer registration API for the future interest form. Spec: `references/TDDs/Interest Form Bloomerang Volunteer - Technical Design - 08.02.html`.
+Interest submission API backed by a Google Sheets destination. Spec: `references/specs/Google Sheets Interest Submission Storage - Functional Spec - 08.05.html`.
 
 ```bash
 npm install
 npm test
 cp .dev.vars.example .dev.vars   # fill when you have keys; TURNSTILE_SKIP=true for local
-npx wrangler pages dev . --compatibility-date=2024-11-01
+npx wrangler pages dev . --compatibility-date=2024-11-01 --compatibility-flags=nodejs_compat
 # POST http://127.0.0.1:8788/api/interest
 ```
 
-Secrets (production): `VOLUNTEER_API_TOKEN`, `TURNSTILE_SECRET_KEY` via `wrangler pages secret put`. Vars: `VOLUNTEER_ORG_ID`. Never commit `.dev.vars`.
+Secrets (production): `GOOGLE_SERVICE_ACCOUNT`, `GOOGLE_SPREADSHEET_ID`, `TURNSTILE_SECRET_KEY` via `wrangler pages secret put`. Vars: `GOOGLE_SHEET_TAB`. Never commit `.dev.vars`.
 
 ### DLQ retry
 
 `processDlqBatch` lives in `functions/scheduled/retry-dlq.js`. Wire it as a
 Cron Trigger on a small Worker that shares the `DLQ_KV` binding and the same
 secrets (every 5 minutes), or call it from an authenticated ops route later.
-Until cron is wired, failed registrations remain in KV for manual replay:
+Until cron is wired, failed submissions remain in KV for manual replay:
 `npx wrangler kv key list --binding=DLQ_KV`.
 
-### When the Volunteer API key arrives
+### When Google service-account access arrives
 
-1. `npx wrangler kv namespace create RATE_LIMIT_KV` and `DLQ_KV`; paste ids into `wrangler.toml`.
-2. `npx wrangler pages secret put VOLUNTEER_API_TOKEN`
-3. `npx wrangler pages secret put TURNSTILE_SECRET_KEY`
-4. Set `VOLUNTEER_ORG_ID` in Pages project variables (production). Ensure `TURNSTILE_SKIP` is **unset** in production.
-5. Deploy Pages project; confirm `POST /api/interest` with a real Turnstile token creates a user in Volunteer.
-6. Wire cron Worker for `processDlqBatch` sharing `DLQ_KV`.
+1. In Google Cloud, create a service account and enable the Sheets API for the project.
+2. Download its key, and `npx wrangler pages secret put GOOGLE_SERVICE_ACCOUNT` with the JSON contents.
+3. Create the spreadsheet, add a `Submissions` tab with the headers `submissionId`, `submittedAtUtc`, `firstName`, `lastName`, `email` in row one, and share it with the service-account email as Editor.
+4. `npx wrangler pages secret put GOOGLE_SPREADSHEET_ID`, and set `GOOGLE_SHEET_TAB` (default `Submissions`) in Pages project variables. Ensure `TURNSTILE_SKIP` is **unset** in production.
+5. Deploy the Pages project; confirm `POST /api/interest` with a real Turnstile token appends one row per submission.
+6. Wire the cron Worker for `processDlqBatch` sharing `DLQ_KV`.
 
