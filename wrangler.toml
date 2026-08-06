@@ -14,9 +14,9 @@ id = "REPLACE_WITH_DLQ_KV_ID"
 preview_id = "REPLACE_WITH_DLQ_KV_PREVIEW_ID"
 
 [vars]
-VOLUNTEER_API_BASE = "https://volunteer.bloomerang.co/api"
 RATE_LIMIT_MAX = "5"
 RATE_LIMIT_WINDOW_SECONDS = "600"
+GOOGLE_SHEET_TAB = "Submissions"
 
 # DLQ retry: processDlqBatch in functions/scheduled/retry-dlq.js is unit-tested
 # and exports a Workers `scheduled` default. Pages Functions do not run cron

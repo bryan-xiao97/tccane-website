@@ -14,7 +14,7 @@ function walk(dir, acc = []) {
 }
 
 describe('secret hygiene', () => {
-  test('repo source does not contain bearer-looking volunteer tokens', () => {
+  test('repo source does not contain bearer-looking service credentials', () => {
     const root = join(process.cwd());
     const files = walk(root).filter(
       (f) =>
