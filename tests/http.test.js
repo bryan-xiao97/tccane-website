@@ -9,11 +9,12 @@ describe('withTimeout', () => {
   test('rejects with a typed timeout', async () => {
     vi.useFakeTimers();
     const pending = withTimeout(new Promise(() => {}), 25, 'token');
-    await vi.advanceTimersByTimeAsync(25);
-    await expect(pending).rejects.toEqual(expect.objectContaining({
+    const assertion = expect(pending).rejects.toEqual(expect.objectContaining({
       name: 'TimeoutError',
       message: 'token timed out after 25ms',
     }));
+    await vi.advanceTimersByTimeAsync(25);
+    await assertion;
     vi.useRealTimers();
   });
 });
