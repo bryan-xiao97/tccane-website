@@ -103,5 +103,30 @@ describe('dlq', () => {
     expect(rec.nextAttemptAt).toBe(1000 + 86_400_000);
     expect(await listDue({ kv, nowMs: 1000, limit: 10 })).toHaveLength(0);
   });
+
+  test('enqueueFailure persists submissionId and submittedAtUtc', async () => {
+    const kv = createMemoryKv();
+    await enqueueFailure({
+      kv,
+      payload: {
+        submissionId: 'sub-1',
+        submittedAtUtc: '2026-08-05T12:00:00.000Z',
+        firstName: 'A',
+        lastName: 'B',
+        email: 'a@b.co',
+      },
+      error: '503',
+      nowMs: 0,
+    });
+    const listed = await kv.list({ prefix: 'dlq:' });
+    const rec = await kv.get(listed.keys[0].name, 'json');
+    expect(rec.payload).toEqual({
+      submissionId: 'sub-1',
+      submittedAtUtc: '2026-08-05T12:00:00.000Z',
+      firstName: 'A',
+      lastName: 'B',
+      email: 'a@b.co',
+    });
+  });
 });
 

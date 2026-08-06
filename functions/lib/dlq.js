@@ -15,6 +15,8 @@ export async function enqueueFailure({ kv, payload, error, nowMs, maxAttempts = 
   const record = {
     id,
     payload: {
+      submissionId: payload.submissionId,
+      submittedAtUtc: payload.submittedAtUtc,
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,

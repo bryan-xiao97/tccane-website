@@ -1,7 +1,8 @@
 import { validateInterestBody } from './validate.js';
 import { verifyTurnstile } from './turnstile.js';
 import { checkRateLimit } from './rate-limit.js';
-import { createOrgUser, toVolunteerUserBody } from './volunteer.js';
+import { newSubmissionId, writeSubmission } from './sheets.js';
+import { createTokenProvider } from './google-token.js';
 import { enqueueFailure } from './dlq.js';
 import { emailFingerprint, info, warn } from './log.js';
 
@@ -23,13 +24,15 @@ function clientIp(request) {
 export async function handleInterestPost(request, env, deps = {}) {
   const fetchImpl = deps.fetchImpl || fetch;
   const nowMs = deps.nowMs ?? Date.now();
+  const getAccessToken =
+    deps.getAccessToken || createTokenProvider(env.GOOGLE_SERVICE_ACCOUNT);
 
   if (request.method !== 'POST') {
     return json(405, { error: 'Method not allowed' });
   }
 
-  if (!env.VOLUNTEER_API_TOKEN || !env.VOLUNTEER_ORG_ID) {
-    warn('misconfigured', { hasToken: Boolean(env.VOLUNTEER_API_TOKEN) });
+  if (!env.GOOGLE_SERVICE_ACCOUNT || !env.GOOGLE_SPREADSHEET_ID) {
+    warn('misconfigured', { hasServiceAccount: Boolean(env.GOOGLE_SERVICE_ACCOUNT) });
     return json(500, { error: 'Server misconfigured' });
   }
 
@@ -89,25 +92,32 @@ export async function handleInterestPost(request, env, deps = {}) {
     }
   }
 
-  const body = toVolunteerUserBody(input);
-  const result = await createOrgUser({
+  const submission = {
+    submissionId: newSubmissionId(deps.rng),
+    submittedAtUtc: new Date(nowMs).toISOString(),
+    firstName: input.firstName,
+    lastName: input.lastName,
+    email: input.email,
+  };
+
+  const result = await writeSubmission({
     fetchImpl,
-    baseUrl: env.VOLUNTEER_API_BASE || 'https://volunteer.bloomerang.co/api',
-    orgId: env.VOLUNTEER_ORG_ID,
-    token: env.VOLUNTEER_API_TOKEN,
-    body,
+    spreadsheetId: env.GOOGLE_SPREADSHEET_ID,
+    tab: env.GOOGLE_SHEET_TAB || 'Submissions',
+    submission,
+    getAccessToken,
   });
 
   if (result.ok) {
-    info('registered', { fp });
-    return json(200, { ok: true, status: 'registered' });
+    info('recorded', { fp, submissionId: submission.submissionId });
+    return json(200, { ok: true, status: 'recorded' });
   }
 
   if (result.retryable) {
     try {
       await enqueueFailure({
         kv: env.DLQ_KV,
-        payload: input,
+        payload: submission,
         error: result.error,
         nowMs,
       });
@@ -115,10 +125,10 @@ export async function handleInterestPost(request, env, deps = {}) {
       warn('dlq_enqueue_failed', { fp, error: String(err?.message || err) });
       return json(503, { error: 'Registration temporarily unavailable' });
     }
-    warn('volunteer_retryable_enqueued', { fp, status: result.status });
+    warn('sheets_retryable_enqueued', { fp, submissionId: submission.submissionId });
     return json(200, { ok: true, status: 'accepted' });
   }
 
-  warn('volunteer_failed', { fp, status: result.status });
+  warn('sheets_failed', { fp, submissionId: submission.submissionId });
   return json(502, { error: 'Registration failed' });
 }
