@@ -1,24 +1,25 @@
 import { listDue, markAttempt, poisonRecord } from '../lib/dlq.js';
-import { createOrgUser, toVolunteerUserBody } from '../lib/volunteer.js';
+import { writeSubmission } from '../lib/sheets.js';
+import { createTokenProvider } from '../lib/google-token.js';
 import { emailFingerprint, info, warn } from '../lib/log.js';
 
 export async function processDlqBatch(env, deps = {}) {
   const fetchImpl = deps.fetchImpl || fetch;
   const nowMs = deps.nowMs ?? Date.now();
   const limit = deps.limit ?? 20;
+  const getAccessToken = deps.getAccessToken || createTokenProvider(env.GOOGLE_SERVICE_ACCOUNT);
   const due = await listDue({ kv: env.DLQ_KV, nowMs, limit });
   let succeeded = 0;
   let failed = 0;
   let poisoned = 0;
 
   for (const item of due) {
-    const body = toVolunteerUserBody(item.payload);
-    const result = await createOrgUser({
+    const result = await writeSubmission({
       fetchImpl,
-      baseUrl: env.VOLUNTEER_API_BASE || 'https://volunteer.bloomerang.co/api',
-      orgId: env.VOLUNTEER_ORG_ID,
-      token: env.VOLUNTEER_API_TOKEN,
-      body,
+      spreadsheetId: env.GOOGLE_SPREADSHEET_ID,
+      tab: env.GOOGLE_SHEET_TAB || 'Submissions',
+      submission: item.payload,
+      getAccessToken,
     });
     const fp = emailFingerprint(item.payload.email);
     if (result.ok) {
