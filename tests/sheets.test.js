@@ -146,6 +146,46 @@ describe('submissionExists', () => {
     expect(r.ok).toBe(false);
     expect(r.retryable).toBe(true);
   });
+
+  test('treats a 401 token failure as permanent', async () => {
+    const fetchImpl = createMockFetch([
+      { match: () => true, response: jsonResponse(200, { values: [] }) },
+    ]);
+    const r = await submissionExists({
+      fetchImpl,
+      spreadsheetId: 's1',
+      range: 'Submissions!A:A',
+      submissionId: 'sub-1',
+      getAccessToken: async () => {
+        const err = new Error('invalid_grant');
+        err.response = { status: 401 };
+        throw err;
+      },
+    });
+    expect(r.ok).toBe(false);
+    expect(r.retryable).toBe(false);
+    expect(r.status).toBe(401);
+  });
+
+  test('treats a 503 token failure as retryable', async () => {
+    const fetchImpl = createMockFetch([
+      { match: () => true, response: jsonResponse(200, { values: [] }) },
+    ]);
+    const r = await submissionExists({
+      fetchImpl,
+      spreadsheetId: 's1',
+      range: 'Submissions!A:A',
+      submissionId: 'sub-1',
+      getAccessToken: async () => {
+        const err = new Error('server error');
+        err.response = { status: 503 };
+        throw err;
+      },
+    });
+    expect(r.ok).toBe(false);
+    expect(r.retryable).toBe(true);
+    expect(r.status).toBe(0);
+  });
 });
 
 describe('appendSubmission', () => {

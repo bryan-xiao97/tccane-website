@@ -13,6 +13,22 @@ function json(status, body, headers = {}) {
   });
 }
 
+function isValidServiceAccount(raw) {
+  if (typeof raw !== 'string' || !raw) return false;
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return false;
+  }
+  return (
+    parsed &&
+    typeof parsed === 'object' &&
+    typeof parsed.client_email === 'string' &&
+    typeof parsed.private_key === 'string'
+  );
+}
+
 function clientIp(request) {
   const cf = request.headers.get('CF-Connecting-IP');
   if (cf) return cf.trim();
@@ -31,7 +47,7 @@ export async function handleInterestPost(request, env, deps = {}) {
     return json(405, { error: 'Method not allowed' });
   }
 
-  if (!env.GOOGLE_SERVICE_ACCOUNT || !env.GOOGLE_SPREADSHEET_ID) {
+  if (!env.GOOGLE_SERVICE_ACCOUNT || !isValidServiceAccount(env.GOOGLE_SERVICE_ACCOUNT) || !env.GOOGLE_SPREADSHEET_ID) {
     warn('misconfigured', { hasServiceAccount: Boolean(env.GOOGLE_SERVICE_ACCOUNT) });
     return json(500, { error: 'Server misconfigured' });
   }
