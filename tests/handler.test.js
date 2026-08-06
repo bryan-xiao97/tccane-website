@@ -5,9 +5,13 @@ import { createMockFetch, jsonResponse } from './helpers/mock-fetch.js';
 
 function envBase(over = {}) {
   return {
-    VOLUNTEER_API_TOKEN: 'tok',
-    VOLUNTEER_ORG_ID: '99',
-    VOLUNTEER_API_BASE: 'https://volunteer.bloomerang.co/api',
+    GOOGLE_SERVICE_ACCOUNT: JSON.stringify({
+      type: 'service_account',
+      client_email: 'sheets@project.iam.gserviceaccount.com',
+      private_key: 'fake-key',
+    }),
+    GOOGLE_SPREADSHEET_ID: 'spreadsheet-1',
+    GOOGLE_SHEET_TAB: 'Submissions',
     TURNSTILE_SECRET_KEY: 'ts-secret',
     TURNSTILE_SKIP: 'true',
     RATE_LIMIT_MAX: '5',
@@ -26,6 +30,19 @@ function post(body, headers = {}) {
   });
 }
 
+function sheetsFetch({ columnValues = [], appendStatus = 200 } = {}) {
+  return createMockFetch([
+    {
+      match: (url) => url.includes('/values/Submissions!A:A'),
+      response: jsonResponse(200, { values: columnValues }),
+    },
+    {
+      match: (url) => url.includes(':append'),
+      response: jsonResponse(appendStatus, { error: 'boom' }),
+    },
+  ]);
+}
+
 const valid = {
   firstName: 'Ada',
   lastName: 'Lovelace',
@@ -33,60 +50,77 @@ const valid = {
   turnstileToken: 'ignored-when-skip',
 };
 
+function deps(over = {}) {
+  return {
+    nowMs: 5_000,
+    getAccessToken: async () => 'fake-token',
+    rng: () => 'sub-123',
+    ...over,
+  };
+}
+
 describe('handleInterestPost', () => {
   test('405 on GET', async () => {
     const req = new Request('https://example.test/api/interest', { method: 'GET' });
-    const res = await handleInterestPost(req, envBase(), { fetchImpl: createMockFetch([]) });
+    const res = await handleInterestPost(req, envBase(), {
+      fetchImpl: createMockFetch([]),
+      ...deps(),
+    });
     expect(res.status).toBe(405);
   });
 
-  test('200 registered when Volunteer succeeds', async () => {
-    const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/organizations/99/users'),
-        response: jsonResponse(200, [{ id: 1, username: 'ada@college.edu' }]),
-      },
-    ]);
-    const res = await handleInterestPost(post(valid), envBase(), {
-      fetchImpl,
-      nowMs: 1_000,
-    });
+  test('200 recorded when Sheets append succeeds', async () => {
+    const fetchImpl = sheetsFetch();
+    const res = await handleInterestPost(post(valid), envBase(), { fetchImpl, ...deps() });
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true, status: 'registered' });
+    expect(await res.json()).toEqual({ ok: true, status: 'recorded' });
+    const appendCall = fetchImpl.calls.find((c) => c.url.includes(':append'));
+    expect(JSON.parse(appendCall.init.body).values).toEqual([
+      ['sub-123', '1970-01-01T00:00:05.000Z', 'Ada', 'Lovelace', 'ada@college.edu'],
+    ]);
   });
 
-  test('200 accepted and DLQ write when Volunteer 503', async () => {
+  test('200 recorded without a second append when the ID already exists', async () => {
+    const fetchImpl = sheetsFetch({ columnValues: [['sub-123']] });
+    const res = await handleInterestPost(post(valid), envBase(), { fetchImpl, ...deps() });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, status: 'recorded' });
+    expect(fetchImpl.calls.filter((c) => c.url.includes(':append'))).toHaveLength(0);
+  });
+
+  test('200 accepted and DLQ write when Sheets append is retryable', async () => {
     const env = envBase();
-    const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/users'),
-        response: jsonResponse(503, { error: 'down' }),
-      },
-    ]);
-    const res = await handleInterestPost(post(valid), env, { fetchImpl, nowMs: 5_000 });
+    const fetchImpl = sheetsFetch({ appendStatus: 503 });
+    const res = await handleInterestPost(post(valid), env, { fetchImpl, ...deps() });
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true, status: 'accepted' });
     const listed = await env.DLQ_KV.list({ prefix: 'dlq:' });
     expect(listed.keys.length).toBe(1);
+    const rec = await env.DLQ_KV.get(listed.keys[0].name, 'json');
+    expect(rec.payload).toEqual({
+      submissionId: 'sub-123',
+      submittedAtUtc: '1970-01-01T00:00:05.000Z',
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@college.edu',
+    });
   });
 
   test('400 on unknown field', async () => {
     const res = await handleInterestPost(
       post({ ...valid, extra: 1 }),
       envBase(),
-      { fetchImpl: createMockFetch([]) },
+      { fetchImpl: createMockFetch([]), ...deps() },
     );
     expect(res.status).toBe(400);
   });
 
   test('429 when rate limited', async () => {
     const env = envBase({ RATE_LIMIT_MAX: '1' });
-    const deps = { fetchImpl: createMockFetch([
-      { match: () => true, response: jsonResponse(200, []) },
-    ]), nowMs: 10_000 };
+    const depsObj = { ...deps(), fetchImpl: sheetsFetch() };
     const ipHeaders = { 'CF-Connecting-IP': '9.9.9.9' };
-    expect((await handleInterestPost(post(valid, ipHeaders), env, deps)).status).toBe(200);
-    const res2 = await handleInterestPost(post(valid, ipHeaders), env, deps);
+    expect((await handleInterestPost(post(valid, ipHeaders), env, depsObj)).status).toBe(200);
+    const res2 = await handleInterestPost(post(valid, ipHeaders), env, depsObj);
     expect(res2.status).toBe(429);
     expect(res2.headers.get('Retry-After')).toBeTruthy();
   });
@@ -99,50 +133,58 @@ describe('handleInterestPost', () => {
         response: jsonResponse(200, { success: false }),
       },
     ]);
-    const res = await handleInterestPost(post(valid), env, { fetchImpl, nowMs: 1 });
+    const res = await handleInterestPost(post(valid), env, { fetchImpl, ...deps() });
     expect(res.status).toBe(403);
   });
 
-  test('500 when token missing', async () => {
-    const env = envBase({ VOLUNTEER_API_TOKEN: '' });
+  test('500 when service account missing', async () => {
+    const env = envBase({ GOOGLE_SERVICE_ACCOUNT: '' });
     const res = await handleInterestPost(post(valid), env, {
       fetchImpl: createMockFetch([]),
-      nowMs: 1,
+      ...deps(),
     });
     expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  });
+
+  test('500 when spreadsheet id missing', async () => {
+    const env = envBase({ GOOGLE_SPREADSHEET_ID: '' });
+    const res = await handleInterestPost(post(valid), env, {
+      fetchImpl: createMockFetch([]),
+      ...deps(),
+    });
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
   test('500 when RATE_LIMIT_KV missing', async () => {
     const env = envBase({ RATE_LIMIT_KV: undefined });
     const res = await handleInterestPost(post(valid), env, {
       fetchImpl: createMockFetch([]),
-      nowMs: 1,
+      ...deps(),
     });
     expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
   test('500 when DLQ_KV missing', async () => {
     const env = envBase({ DLQ_KV: undefined });
     const res = await handleInterestPost(post(valid), env, {
       fetchImpl: createMockFetch([]),
-      nowMs: 1,
+      ...deps(),
     });
     expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
   test('500 when Turnstile secret missing and skip off', async () => {
     const env = envBase({ TURNSTILE_SKIP: 'false', TURNSTILE_SECRET_KEY: '' });
     const res = await handleInterestPost(post(valid), env, {
       fetchImpl: createMockFetch([]),
-      nowMs: 1,
+      ...deps(),
     });
     expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
-  test('503 when Volunteer 503 and DLQ put fails', async () => {
+  test('503 when retryable failure and DLQ put fails', async () => {
     const badKv = {
       async get() {
         return null;
@@ -156,25 +198,15 @@ describe('handleInterestPost', () => {
       async delete() {},
     };
     const env = envBase({ DLQ_KV: badKv });
-    const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/users'),
-        response: jsonResponse(503, { error: 'down' }),
-      },
-    ]);
-    const res = await handleInterestPost(post(valid), env, { fetchImpl, nowMs: 5_000 });
+    const fetchImpl = sheetsFetch({ appendStatus: 503 });
+    const res = await handleInterestPost(post(valid), env, { fetchImpl, ...deps() });
     expect(res.status).toBe(503);
     expect(await res.json()).toEqual({ error: 'Registration temporarily unavailable' });
   });
 
-  test('502 when Volunteer 400 non-retryable', async () => {
-    const fetchImpl = createMockFetch([
-      { match: () => true, response: jsonResponse(400, { error: 'bad' }) },
-    ]);
-    const res = await handleInterestPost(post(valid), envBase(), {
-      fetchImpl,
-      nowMs: 1,
-    });
+  test('502 when Sheets append is a permanent 400', async () => {
+    const fetchImpl = sheetsFetch({ appendStatus: 400 });
+    const res = await handleInterestPost(post(valid), envBase(), { fetchImpl, ...deps() });
     expect(res.status).toBe(502);
   });
 });
