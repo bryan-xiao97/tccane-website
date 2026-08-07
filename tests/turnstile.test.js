@@ -48,4 +48,14 @@ describe('verifyTurnstile', () => {
     });
     expect(r.ok).toBe(false);
   });
+
+  test('fails closed when Siteverify times out', async () => {
+    const fetchImpl = (_url, init) => new Promise((_, reject) => {
+      init.signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
+    });
+    const result = await verifyTurnstile({
+      token: 'tok', ip: '1.2.3.4', secret: 'sec', fetchImpl, timeoutMs: 5,
+    });
+    expect(result).toEqual({ ok: false, error: 'Turnstile request failed' });
+  });
 });
