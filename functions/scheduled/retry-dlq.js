@@ -1,10 +1,9 @@
 import { listDue, markAttempt, poisonRecord, queueHealth } from '../lib/dlq.js';
 import { writeSubmission } from '../lib/sheets.js';
-import { createTokenProvider, oauthConfigFromEnv } from '../lib/google-token.js';
+import { createTokenProvider, oauthConfigFromEnv, PERMANENT_CODES as PERMANENT_AUTH_CODES } from '../lib/google-token.js';
 import { info, warn } from '../lib/log.js';
 
 const OLDEST_AGE_THRESHOLD_MS = 15 * 60 * 1000;
-const PERMANENT_AUTH_CODES = new Set(['invalid_grant', 'invalid_client', 'unauthorized_client']);
 
 export async function processDlqBatch(env, deps = {}) {
   const oauth = oauthConfigFromEnv(env);

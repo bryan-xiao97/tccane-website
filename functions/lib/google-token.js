@@ -2,7 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { TimeoutError, withTimeout } from './http.js';
 
 export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-const PERMANENT_CODES = new Set(['invalid_grant', 'invalid_client', 'unauthorized_client']);
+export const PERMANENT_CODES = new Set(['invalid_grant', 'invalid_client', 'unauthorized_client']);
 
 export class GoogleAuthError extends Error {
   constructor(code, { retryable, status = 0, cause } = {}) {
