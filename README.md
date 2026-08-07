@@ -76,6 +76,8 @@ Verify the form at `http://127.0.0.1:8788/#involved`.
 
 Install `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_SPREADSHEET_ID` and `TURNSTILE_SECRET_KEY` as Pages secrets. Configure `TURNSTILE_SITE_KEY` and `GOOGLE_SHEET_TAB=Submissions` as Pages variables. Ensure `TURNSTILE_SKIP` is **unset** in production.
 
+When smoke testing against a production secret, mint a widget token from the live form and pass it with `TURNSTILE_TOKEN=<token>`; against staging or locally where `TURNSTILE_SKIP=true` the script falls back to `dev`.
+
 ### Retry Worker
 
 Confirm the `DLQ_KV` namespace IDs match in `wrangler.toml` and `wrangler.retry.toml`. Install the same four Google values (`GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_SPREADSHEET_ID`) with `npx wrangler secret put NAME --config wrangler.retry.toml`. Deploy via `npm run retry:deploy` and verify the five-minute Cron Trigger.
