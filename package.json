@@ -6,7 +6,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "pages:dev": "wrangler pages dev . --compatibility-date=2024-11-01 --compatibility-flags=nodejs_compat",
-    "smoke": "bash scripts/smoke-interest.sh"
+    "smoke": "bash scripts/smoke-interest.sh",
+    "setup:google": "node scripts/setup-google-owner.mjs"
   },
   "devDependencies": {
     "vitest": "^3.2.4",
