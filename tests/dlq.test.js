@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { enqueueFailure, listDue, markAttempt, poisonRecord } from '../functions/lib/dlq.js';
+import { enqueueFailure, listDue, markAttempt, poisonRecord, queueHealth } from '../functions/lib/dlq.js';
 import { createMemoryKv } from './helpers/memory-kv.js';
 
 describe('dlq', () => {
@@ -126,6 +126,46 @@ describe('dlq', () => {
       firstName: 'A',
       lastName: 'B',
       email: 'a@b.co',
+    });
+  });
+
+  test('listDue paginates past poisoned records', async () => {
+    const kv = createMemoryKv();
+    for (let i = 0; i < 1001; i += 1) {
+      await kv.put(`dlq:${String(i).padStart(4, '0')}`, JSON.stringify({
+        id: String(i), payload: {}, poisoned: true, createdAt: 0, nextAttemptAt: 0,
+      }));
+    }
+    await kv.put('dlq:zzzz', JSON.stringify({
+      id: 'due', payload: {}, poisoned: false, createdAt: 0, nextAttemptAt: 0,
+    }));
+    expect((await listDue({ kv, nowMs: 1, limit: 20 })).map((item) => item.id)).toEqual(['due']);
+  });
+
+  test('enqueue applies a 30-day TTL', async () => {
+    const kv = createMemoryKv();
+    const { id } = await enqueueFailure({
+      kv,
+      payload: { submissionId: 'sub-1', submittedAtUtc: '2026-08-06T00:00:00Z', firstName: 'A', lastName: 'B', email: 'a@b.co' },
+      error: 'sheets_http_503',
+      nowMs: 0,
+    });
+    expect(kv._expirationTtl(`dlq:${id}`)).toBe(30 * 24 * 60 * 60);
+  });
+
+  test('records older than 24 hours are poisoned instead of returned due', async () => {
+    const kv = createMemoryKv();
+    const { id } = await enqueueFailure({ kv, payload: {}, error: 'down', nowMs: 0 });
+    expect(await listDue({ kv, nowMs: 24 * 60 * 60 * 1000 + 1, limit: 20 })).toEqual([]);
+    expect((await kv.get(`dlq:${id}`, 'json')).poisoned).toBe(true);
+  });
+
+  test('queueHealth reports depth and oldest age without exposing payloads', async () => {
+    const kv = createMemoryKv();
+    await kv.put('dlq:a', JSON.stringify({ id: 'a', createdAt: 100, poisoned: false }));
+    await kv.put('dlq:b', JSON.stringify({ id: 'b', createdAt: 200, poisoned: true }));
+    expect(await queueHealth({ kv, nowMs: 1_100 })).toEqual({
+      queued: 1, poisoned: 1, oldestAgeMs: 1_000,
     });
   });
 });

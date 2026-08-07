@@ -20,12 +20,24 @@ export function createMemoryKv() {
       store.delete(key);
       store.delete(`${key}__meta`);
     },
-    async list({ prefix = '', limit = 1000 } = {}) {
-      const keys = [...store.keys()]
-        .filter((k) => !k.endsWith('__meta') && k.startsWith(prefix))
-        .slice(0, limit)
-        .map((name) => ({ name }));
-      return { keys, list_complete: true, cacheStatus: null };
+    async list({ prefix = '', limit = 1000, cursor } = {}) {
+      const names = [...store.keys()]
+        .filter((key) => !key.endsWith('__meta') && key.startsWith(prefix))
+        .sort();
+      const start = cursor ? Number(cursor) : 0;
+      const page = names.slice(start, start + limit);
+      const next = start + page.length;
+      return {
+        keys: page.map((name) => ({ name })),
+        list_complete: next >= names.length,
+        cursor: next >= names.length ? '' : String(next),
+        cacheStatus: null,
+      };
+    },
+    /** test-only */
+    _expirationTtl(key) {
+      const meta = store.get(`${key}__meta`);
+      return meta ? JSON.parse(meta).expirationTtl : null;
     },
     /** test-only */
     _dump() {
