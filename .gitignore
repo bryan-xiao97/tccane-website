@@ -23,3 +23,6 @@ references/progress/
 .dev.vars
 .wrangler/
 dist/
+
+# One-time local Google OAuth setup artifacts
+.owner-setup-*
