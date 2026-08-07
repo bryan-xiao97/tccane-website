@@ -1,6 +1,8 @@
+import { fetchWithTimeout } from './http.js';
+
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-export async function verifyTurnstile({ token, ip, secret, fetchImpl }) {
+export async function verifyTurnstile({ token, ip, secret, fetchImpl, timeoutMs = 8_000 }) {
   if (!token || !secret) {
     return { ok: false, error: 'Missing turnstile token or secret' };
   }
@@ -11,11 +13,11 @@ export async function verifyTurnstile({ token, ip, secret, fetchImpl }) {
 
   let res;
   try {
-    res = await fetchImpl(SITEVERIFY, {
+    res = await fetchWithTimeout(fetchImpl, SITEVERIFY, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
       body,
-    });
+    }, timeoutMs);
   } catch (err) {
     return { ok: false, error: 'Turnstile request failed' };
   }
