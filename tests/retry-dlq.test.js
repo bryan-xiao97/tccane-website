@@ -1,4 +1,6 @@
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { GoogleAuthError } from '../functions/lib/google-token.js';
+import { SHEET_HEADERS } from '../functions/lib/sheets.js';
 import { enqueueFailure } from '../functions/lib/dlq.js';
 import { processDlqBatch } from '../functions/scheduled/retry-dlq.js';
 import { createMemoryKv } from './helpers/memory-kv.js';
@@ -7,13 +9,11 @@ import { createMockFetch, jsonResponse } from './helpers/mock-fetch.js';
 function envBase() {
   return {
     DLQ_KV: createMemoryKv(),
+    GOOGLE_OAUTH_CLIENT_ID: 'client.apps.googleusercontent.com',
+    GOOGLE_OAUTH_CLIENT_SECRET: 'client-secret',
+    GOOGLE_OAUTH_REFRESH_TOKEN: 'refresh-token',
     GOOGLE_SPREADSHEET_ID: 'spreadsheet-1',
     GOOGLE_SHEET_TAB: 'Submissions',
-    GOOGLE_SERVICE_ACCOUNT: JSON.stringify({
-      type: 'service_account',
-      client_email: 'sheets@project.iam.gserviceaccount.com',
-      private_key: 'fake-key',
-    }),
   };
 }
 
@@ -34,19 +34,53 @@ function queued({ kv, submissionId = 'sub-1' }) {
   });
 }
 
+function headerRoute() {
+  return {
+    match: (url) => decodeURIComponent(url).includes("'Submissions'!A1:E1"),
+    response: jsonResponse(200, { values: [SHEET_HEADERS] }),
+  };
+}
+
+function idsRoute(values = []) {
+  return {
+    match: (url) => decodeURIComponent(url).includes("'Submissions'!A:A"),
+    response: jsonResponse(200, { values }),
+  };
+}
+
+function appendRoute(status = 200, body = { updates: { updatedRows: 1 } }) {
+  return {
+    match: (url) => url.includes(':append'),
+    response: jsonResponse(status, body),
+  };
+}
+
+function warnLog() {
+  return (console.warn.mock.calls || [])
+    .map((call) => String(call[0]))
+    .join('\n');
+}
+
+function hasWarnEvent(event) {
+  return warnLog().includes(`"event":"${event}"`);
+}
+
 describe('processDlqBatch', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test('retries due items and deletes on success', async () => {
     const env = envBase();
     await queued({ kv: env.DLQ_KV });
     const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/values/Submissions!A:A'),
-        response: jsonResponse(200, { values: [] }),
-      },
-      {
-        match: (url) => url.includes(':append'),
-        response: jsonResponse(200, { updates: { updatedRows: 1 } }),
-      },
+      headerRoute(),
+      idsRoute(),
+      appendRoute(),
     ]);
     const summary = await processDlqBatch(env, { fetchImpl, getAccessToken, nowMs: 0, limit: 10 });
     expect(summary.succeeded).toBe(1);
@@ -57,10 +91,8 @@ describe('processDlqBatch', () => {
     const env = envBase();
     await queued({ kv: env.DLQ_KV });
     const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/values/Submissions!A:A'),
-        response: jsonResponse(200, { values: [['sub-1']] }),
-      },
+      headerRoute(),
+      idsRoute([['sub-1']]),
     ]);
     const summary = await processDlqBatch(env, { fetchImpl, getAccessToken, nowMs: 0, limit: 10 });
     expect(summary.succeeded).toBe(1);
@@ -72,14 +104,9 @@ describe('processDlqBatch', () => {
     const env = envBase();
     await queued({ kv: env.DLQ_KV });
     const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/values/Submissions!A:A'),
-        response: jsonResponse(200, { values: [] }),
-      },
-      {
-        match: (url) => url.includes(':append'),
-        response: jsonResponse(503, { error: 'down' }),
-      },
+      headerRoute(),
+      idsRoute(),
+      appendRoute(503, { error: 'down' }),
     ]);
     await processDlqBatch(env, { fetchImpl, getAccessToken, nowMs: 0, limit: 10 });
     const listed = await env.DLQ_KV.list({ prefix: 'dlq:' });
@@ -92,14 +119,9 @@ describe('processDlqBatch', () => {
     const env = envBase();
     await queued({ kv: env.DLQ_KV });
     const fetchImpl = createMockFetch([
-      {
-        match: (url) => url.includes('/values/Submissions!A:A'),
-        response: jsonResponse(200, { values: [] }),
-      },
-      {
-        match: (url) => url.includes(':append'),
-        response: jsonResponse(400, { error: 'bad' }),
-      },
+      headerRoute(),
+      idsRoute(),
+      appendRoute(400, { error: 'bad' }),
     ]);
     const summary = await processDlqBatch(env, { fetchImpl, getAccessToken, nowMs: 0, limit: 10 });
     expect(summary.poisoned).toBe(1);
@@ -107,5 +129,37 @@ describe('processDlqBatch', () => {
     const rec = await env.DLQ_KV.get(listed.keys[0].name, 'json');
     expect(rec.poisoned).toBe(true);
     expect(rec.lastError).toMatch(/^permanent:/);
+    expect(hasWarnEvent('dlq_poisoned')).toBe(true);
+    expect(warnLog()).not.toContain('a@b.co');
+  });
+
+  test('poisons without append when owner authorization is revoked', async () => {
+    const env = envBase();
+    await queued({ kv: env.DLQ_KV });
+    const getAccessToken = async () => {
+      throw new GoogleAuthError('invalid_grant', { retryable: false, status: 400 });
+    };
+    const summary = await processDlqBatch(env, {
+      fetchImpl: createMockFetch([]), getAccessToken, nowMs: 0, limit: 20,
+    });
+    expect(summary).toEqual(expect.objectContaining({ processed: 1, poisoned: 1 }));
+    const listed = await env.DLQ_KV.list({ prefix: 'dlq:' });
+    expect((await env.DLQ_KV.get(listed.keys[0].name, 'json')).lastError).toBe('permanent:invalid_grant');
+    expect(hasWarnEvent('google_auth_permanent')).toBe(true);
+    expect(warnLog()).not.toContain('a@b.co');
+  });
+
+  test('reports an overdue queue when oldest age exceeds 15 minutes', async () => {
+    const env = envBase();
+    await queued({ kv: env.DLQ_KV });
+    const result = await processDlqBatch(env, {
+      fetchImpl: createMockFetch([]),
+      getAccessToken: async () => { throw new GoogleAuthError('token_timeout', { retryable: true, status: 0 }); },
+      nowMs: 16 * 60 * 1000,
+      limit: 20,
+    });
+    expect(result.oldestAgeMs).toBeGreaterThan(15 * 60 * 1000);
+    expect(hasWarnEvent('dlq_oldest_age_exceeded')).toBe(true);
+    expect(warnLog()).not.toContain('a@b.co');
   });
 });
