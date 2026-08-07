@@ -84,12 +84,13 @@ export async function verifyInterestSpreadsheet({
 }
 
 export function mergeDevVars(current, values) {
-  const removed = new Set(['GOOGLE_SERVICE_ACCOUNT', ...Object.keys(values)]);
+  const replaced = new Set(Object.keys(values));
   const retained = current
     .split('\n')
     .filter((line) => {
       const name = line.split('=', 1)[0].trim();
-      return !removed.has(name);
+      if (!name || replaced.has(name)) return false;
+      return !name.includes('SERVICE_ACCOUNT');
     });
   for (const [name, value] of Object.entries(values)) {
     retained.push(`${name}=${JSON.stringify(value)}`);
