@@ -2,7 +2,7 @@ import { validateInterestBody } from './validate.js';
 import { verifyTurnstile } from './turnstile.js';
 import { checkRateLimit } from './rate-limit.js';
 import { newSubmissionId, writeSubmission } from './sheets.js';
-import { oauthConfigFromEnv, createTokenProvider } from './google-token.js';
+import { oauthConfigFromEnv, createTokenProvider, PERMANENT_CODES as PERMANENT_AUTH_CODES } from './google-token.js';
 import { enqueueFailure } from './dlq.js';
 import { info, warn } from './log.js';
 
@@ -12,8 +12,6 @@ function json(status, body, headers = {}) {
     headers: { 'content-type': 'application/json', ...headers },
   });
 }
-
-const PERMANENT_AUTH_CODES = new Set(['invalid_grant', 'invalid_client', 'unauthorized_client']);
 
 function permanentFailureEvent(code) {
   if (code === 'sheet_contract_invalid') return 'sheet_contract_invalid';
