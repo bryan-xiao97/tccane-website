@@ -2,9 +2,9 @@ import { validateInterestBody } from './validate.js';
 import { verifyTurnstile } from './turnstile.js';
 import { checkRateLimit } from './rate-limit.js';
 import { newSubmissionId, writeSubmission } from './sheets.js';
-import { createTokenProvider } from './google-token.js';
+import { oauthConfigFromEnv, createTokenProvider } from './google-token.js';
 import { enqueueFailure } from './dlq.js';
-import { emailFingerprint, info, warn } from './log.js';
+import { info, warn } from './log.js';
 
 function json(status, body, headers = {}) {
   return new Response(JSON.stringify(body), {
@@ -13,20 +13,12 @@ function json(status, body, headers = {}) {
   });
 }
 
-function isValidServiceAccount(raw) {
-  if (typeof raw !== 'string' || !raw) return false;
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return false;
-  }
-  return (
-    parsed &&
-    typeof parsed === 'object' &&
-    typeof parsed.client_email === 'string' &&
-    typeof parsed.private_key === 'string'
-  );
+const PERMANENT_AUTH_CODES = new Set(['invalid_grant', 'invalid_client', 'unauthorized_client']);
+
+function permanentFailureEvent(code) {
+  if (code === 'sheet_contract_invalid') return 'sheet_contract_invalid';
+  if (PERMANENT_AUTH_CODES.has(code)) return 'google_auth_permanent';
+  return 'submission_permanent_failure';
 }
 
 function clientIp(request) {
@@ -40,17 +32,17 @@ function clientIp(request) {
 export async function handleInterestPost(request, env, deps = {}) {
   const fetchImpl = deps.fetchImpl || fetch;
   const nowMs = deps.nowMs ?? Date.now();
-  const getAccessToken =
-    deps.getAccessToken || createTokenProvider(env.GOOGLE_SERVICE_ACCOUNT);
 
   if (request.method !== 'POST') {
     return json(405, { error: 'Method not allowed' });
   }
 
-  if (!env.GOOGLE_SERVICE_ACCOUNT || !isValidServiceAccount(env.GOOGLE_SERVICE_ACCOUNT) || !env.GOOGLE_SPREADSHEET_ID) {
-    warn('misconfigured', { hasServiceAccount: Boolean(env.GOOGLE_SERVICE_ACCOUNT) });
+  const oauth = oauthConfigFromEnv(env);
+  if (!oauth.ok || !env.GOOGLE_SPREADSHEET_ID) {
+    warn('misconfigured', { missing: oauth.ok ? ['GOOGLE_SPREADSHEET_ID'] : oauth.missing });
     return json(500, { error: 'Server misconfigured' });
   }
+  const getAccessToken = deps.getAccessToken || createTokenProvider(oauth.value);
 
   if (!env.RATE_LIMIT_KV || !env.DLQ_KV) {
     warn('misconfigured', { hasRateLimitKv: Boolean(env.RATE_LIMIT_KV), hasDlqKv: Boolean(env.DLQ_KV) });
@@ -74,7 +66,6 @@ export async function handleInterestPost(request, env, deps = {}) {
     return json(parsed.status, { error: parsed.error });
   }
   const input = parsed.value;
-  const fp = emailFingerprint(input.email);
   const ip = clientIp(request);
 
   let limit = parseInt(env.RATE_LIMIT_MAX || '5', 10);
@@ -122,10 +113,11 @@ export async function handleInterestPost(request, env, deps = {}) {
     tab: env.GOOGLE_SHEET_TAB || 'Submissions',
     submission,
     getAccessToken,
+    timeoutMs: deps.googleTimeoutMs ?? 8_000,
   });
 
   if (result.ok) {
-    info('recorded', { fp, submissionId: submission.submissionId });
+    info('recorded', { submissionId: submission.submissionId });
     return json(200, { ok: true, status: 'recorded' });
   }
 
@@ -138,13 +130,13 @@ export async function handleInterestPost(request, env, deps = {}) {
         nowMs,
       });
     } catch (err) {
-      warn('dlq_enqueue_failed', { fp, error: String(err?.message || err) });
-      return json(503, { error: 'Registration temporarily unavailable' });
+      warn('dlq_enqueue_failed', { submissionId: submission.submissionId, error: String(err?.message || err) });
+      return json(503, { error: 'Submission temporarily unavailable' });
     }
-    warn('sheets_retryable_enqueued', { fp, submissionId: submission.submissionId });
+    warn('sheets_retryable_enqueued', { submissionId: submission.submissionId });
     return json(200, { ok: true, status: 'accepted' });
   }
 
-  warn('sheets_failed', { fp, submissionId: submission.submissionId });
-  return json(502, { error: 'Registration failed' });
+  warn(permanentFailureEvent(result.code), { submissionId: submission.submissionId, code: result.code });
+  return json(502, { error: 'Submission failed' });
 }

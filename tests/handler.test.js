@@ -1,15 +1,15 @@
 import { describe, expect, test } from 'vitest';
 import { handleInterestPost } from '../functions/lib/handler.js';
+import { GoogleAuthError } from '../functions/lib/google-token.js';
+import { SHEET_HEADERS } from '../functions/lib/sheets.js';
 import { createMemoryKv } from './helpers/memory-kv.js';
 import { createMockFetch, jsonResponse } from './helpers/mock-fetch.js';
 
 function envBase(over = {}) {
   return {
-    GOOGLE_SERVICE_ACCOUNT: JSON.stringify({
-      type: 'service_account',
-      client_email: 'sheets@project.iam.gserviceaccount.com',
-      private_key: 'fake-key',
-    }),
+    GOOGLE_OAUTH_CLIENT_ID: 'client.apps.googleusercontent.com',
+    GOOGLE_OAUTH_CLIENT_SECRET: 'client-secret',
+    GOOGLE_OAUTH_REFRESH_TOKEN: 'refresh-token',
     GOOGLE_SPREADSHEET_ID: 'spreadsheet-1',
     GOOGLE_SHEET_TAB: 'Submissions',
     TURNSTILE_SECRET_KEY: 'ts-secret',
@@ -33,7 +33,11 @@ function post(body, headers = {}) {
 function sheetsFetch({ columnValues = [], appendStatus = 200 } = {}) {
   return createMockFetch([
     {
-      match: (url) => url.includes('/values/Submissions!A:A'),
+      match: (url) => decodeURIComponent(url).includes("'Submissions'!A1:E1"),
+      response: jsonResponse(200, { values: [SHEET_HEADERS] }),
+    },
+    {
+      match: (url) => decodeURIComponent(url).includes("'Submissions'!A:A"),
       response: jsonResponse(200, { values: columnValues }),
     },
     {
@@ -137,34 +141,40 @@ describe('handleInterestPost', () => {
     expect(res.status).toBe(403);
   });
 
-  test('500 when service account missing', async () => {
-    const env = envBase({ GOOGLE_SERVICE_ACCOUNT: '' });
-    const res = await handleInterestPost(post(valid), env, {
-      fetchImpl: createMockFetch([]),
-      ...deps(),
-    });
+  test.each([
+    'GOOGLE_OAUTH_CLIENT_ID',
+    'GOOGLE_OAUTH_CLIENT_SECRET',
+    'GOOGLE_OAUTH_REFRESH_TOKEN',
+    'GOOGLE_SPREADSHEET_ID',
+  ])('500 when %s is missing', async (name) => {
+    const env = envBase({ [name]: '' });
+    const res = await handleInterestPost(post(valid), env, { fetchImpl: createMockFetch([]), ...deps() });
     expect(res.status).toBe(500);
     expect(await res.json()).toEqual({ error: 'Server misconfigured' });
   });
 
-  test('500 when service account secret is malformed', async () => {
-    const env = envBase({ GOOGLE_SERVICE_ACCOUNT: 'not-json' });
+  test('502 without enqueue when owner authorization is revoked', async () => {
+    const env = envBase();
+    const getAccessToken = async () => {
+      throw new GoogleAuthError('invalid_grant', { retryable: false, status: 400 });
+    };
     const res = await handleInterestPost(post(valid), env, {
-      fetchImpl: createMockFetch([]),
-      ...deps(),
+      fetchImpl: createMockFetch([]), ...deps({ getAccessToken }),
     });
-    expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({ error: 'Submission failed' });
+    expect((await env.DLQ_KV.list({ prefix: 'dlq:' })).keys).toHaveLength(0);
   });
 
-  test('500 when spreadsheet id missing', async () => {
-    const env = envBase({ GOOGLE_SPREADSHEET_ID: '' });
-    const res = await handleInterestPost(post(valid), env, {
-      fetchImpl: createMockFetch([]),
-      ...deps(),
-    });
-    expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: 'Server misconfigured' });
+  test('502 without enqueue when the sheet headers drift', async () => {
+    const env = envBase();
+    const fetchImpl = createMockFetch([{
+      match: () => true,
+      response: jsonResponse(200, { values: [['wrong']] }),
+    }]);
+    const res = await handleInterestPost(post(valid), env, { fetchImpl, ...deps() });
+    expect(res.status).toBe(502);
+    expect((await env.DLQ_KV.list({ prefix: 'dlq:' })).keys).toHaveLength(0);
   });
 
   test('500 when RATE_LIMIT_KV missing', async () => {
@@ -211,7 +221,7 @@ describe('handleInterestPost', () => {
     const fetchImpl = sheetsFetch({ appendStatus: 503 });
     const res = await handleInterestPost(post(valid), env, { fetchImpl, ...deps() });
     expect(res.status).toBe(503);
-    expect(await res.json()).toEqual({ error: 'Registration temporarily unavailable' });
+    expect(await res.json()).toEqual({ error: 'Submission temporarily unavailable' });
   });
 
   test('502 when Sheets append is a permanent 400', async () => {

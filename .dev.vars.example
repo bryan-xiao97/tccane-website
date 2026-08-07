@@ -1,4 +1,8 @@
-GOOGLE_SERVICE_ACCOUNT={"type":"service_account","project_id":"replace-me","client_email":"replace-me@replace-me.iam.gserviceaccount.com","private_key":"-----BEGIN PRIVATE KEY-----\nREPLACE_ME\n-----END PRIVATE KEY-----\n"}
-GOOGLE_SPREADSHEET_ID=replace-me
-TURNSTILE_SECRET_KEY=replace-me
-TURNSTILE_SKIP=true
+GOOGLE_OAUTH_CLIENT_ID="client-id.apps.googleusercontent.com"
+GOOGLE_OAUTH_CLIENT_SECRET="local-owner-setup-value"
+GOOGLE_OAUTH_REFRESH_TOKEN="local-owner-setup-value"
+GOOGLE_SPREADSHEET_ID="owner-setup-created-id"
+GOOGLE_SHEET_TAB="Submissions"
+TURNSTILE_SITE_KEY="1x00000000000000000000AA"
+TURNSTILE_SECRET_KEY="1x0000000000000000000000000000000AA"
+TURNSTILE_SKIP="false"
