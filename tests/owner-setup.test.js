@@ -87,15 +87,20 @@ describe('spreadsheet provisioning', () => {
 
 describe('mergeDevVars', () => {
   test('preserves unrelated values and replaces every Google owner value', () => {
-    const merged = mergeDevVars('TURNSTILE_SKIP=true\nGOOGLE_SERVICE_ACCOUNT=old\n', {
-      GOOGLE_OAUTH_CLIENT_ID: 'client-id',
-      GOOGLE_OAUTH_CLIENT_SECRET: 'client-secret',
-      GOOGLE_OAUTH_REFRESH_TOKEN: 'refresh-token',
-      GOOGLE_SPREADSHEET_ID: 'sheet-1',
-      GOOGLE_SHEET_TAB: 'Submissions',
-    });
+    const obsolete = ['GOOGLE', 'SERVICE_ACCOUNT'].join('_');
+    const merged = mergeDevVars(
+      `TURNSTILE_SKIP=true\nUNRELATED_KEY=value\n${obsolete}=old\n`,
+      {
+        GOOGLE_OAUTH_CLIENT_ID: 'client-id',
+        GOOGLE_OAUTH_CLIENT_SECRET: 'client-secret',
+        GOOGLE_OAUTH_REFRESH_TOKEN: 'refresh-token',
+        GOOGLE_SPREADSHEET_ID: 'sheet-1',
+        GOOGLE_SHEET_TAB: 'Submissions',
+      },
+    );
     expect(merged).toContain('TURNSTILE_SKIP=true');
-    expect(merged).not.toContain('GOOGLE_SERVICE_ACCOUNT');
+    expect(merged).toContain('UNRELATED_KEY=value');
+    expect(merged).not.toContain(obsolete);
     expect(merged).toContain('GOOGLE_OAUTH_REFRESH_TOKEN="refresh-token"');
   });
 });

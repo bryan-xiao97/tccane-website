@@ -46,32 +46,73 @@ See `SUMMARY.md` for design notes and the conversion provenance.
 
 ## Middleware (Cloudflare Pages Function)
 
-Interest submission API backed by a Google Sheets destination. Spec: `references/specs/Google Sheets Interest Submission Storage - Functional Spec - 08.05.html`.
+Interest submission API backed by a Google Sheets destination owned by the designated personal Google account. Spec: `references/specs/Embedded Interest Form and Personal Google Sheets Access - Functional Spec - 08.06.html`.
+
+Access uses OAuth with the `https://www.googleapis.com/auth/drive.file` scope only. The one-time local setup and production runtime share the same OAuth client ID, client secret and refresh token. Never commit `.dev.vars` and never print or embed secret values.
+
+### Local owner setup
+
+Create a Web OAuth client in Google Cloud with authorized redirect URI `http://127.0.0.1:53682/oauth2/callback`. The OAuth consent screen must be **Production**, not Testing. Set the client ID and secret in the shell, then run:
 
 ```bash
-npm install
-npm test
-cp .dev.vars.example .dev.vars   # fill when you have keys; TURNSTILE_SKIP=true for local
-npx wrangler pages dev . --compatibility-date=2024-11-01 --compatibility-flags=nodejs_compat
-# POST http://127.0.0.1:8788/api/interest
+export GOOGLE_OAUTH_CLIENT_ID="..."
+export GOOGLE_OAUTH_CLIENT_SECRET="..."
+npm run setup:google
 ```
 
-Secrets (production): `GOOGLE_SERVICE_ACCOUNT`, `GOOGLE_SPREADSHEET_ID`, `TURNSTILE_SECRET_KEY` via `wrangler pages secret put`. Vars: `GOOGLE_SHEET_TAB`. Never commit `.dev.vars`.
+The command opens a loopback callback on `127.0.0.1:53682`, validates state in constant time, creates the `TCCANE Interest Submissions` spreadsheet with the `Submissions` tab and protected five-column header, and writes the deployment values to git-ignored `.dev.vars`.
 
-### DLQ retry
+### Local development
 
-`processDlqBatch` lives in `functions/scheduled/retry-dlq.js`. Wire it as a
-Cron Trigger on a small Worker that shares the `DLQ_KV` binding and the same
-secrets (every 5 minutes), or call it from an authenticated ops route later.
-Until cron is wired, failed submissions remain in KV for manual replay:
-`npx wrangler kv key list --binding=DLQ_KV`.
+Copy `.dev.vars.example` to `.dev.vars`, retaining Cloudflare's test Turnstile pair. Run:
 
-### When Google service-account access arrives
+```bash
+npm run pages:dev
+```
 
-1. In Google Cloud, create a service account and enable the Sheets API for the project.
-2. Download its key, and `npx wrangler pages secret put GOOGLE_SERVICE_ACCOUNT` with the JSON contents.
-3. Create the spreadsheet, add a `Submissions` tab with the headers `submissionId`, `submittedAtUtc`, `firstName`, `lastName`, `email` in row one, and share it with the service-account email as Editor.
-4. `npx wrangler pages secret put GOOGLE_SPREADSHEET_ID`, and set `GOOGLE_SHEET_TAB` (default `Submissions`) in Pages project variables. Ensure `TURNSTILE_SKIP` is **unset** in production.
-5. Deploy the Pages project; confirm `POST /api/interest` with a real Turnstile token appends one row per submission.
-6. Wire the cron Worker for `processDlqBatch` sharing `DLQ_KV`.
+Verify the form at `http://127.0.0.1:8788/#involved`.
+
+### Pages secrets
+
+Install `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_SPREADSHEET_ID` and `TURNSTILE_SECRET_KEY` as Pages secrets. Configure `TURNSTILE_SITE_KEY` and `GOOGLE_SHEET_TAB=Submissions` as Pages variables. Ensure `TURNSTILE_SKIP` is **unset** in production.
+
+### Retry Worker
+
+Confirm the `DLQ_KV` namespace IDs match in `wrangler.toml` and `wrangler.retry.toml`. Install the same four Google values (`GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN`, `GOOGLE_SPREADSHEET_ID`) with `npx wrangler secret put NAME --config wrangler.retry.toml`. Deploy via `npm run retry:deploy` and verify the five-minute Cron Trigger.
+
+### Reauthorization
+
+Pause or hide the form, rerun `npm run setup:google` with the designated owner, update the Pages and Worker secrets, smoke test both services, then restore the form. Revoked access produces visitor failure and a `google_auth_permanent` event rather than queued success.
+
+### Sheet contract
+
+`Submissions` is append-only. Columns A:E and row one are application-managed. Staff must use a separate tab for notes or reporting and must not sort partial ranges in the application-managed columns.
+
+### Retention
+
+Retry and poisoned KV records expire from KV after 30 days. Retries stop after 24 hours (older records become poisoned). Sheet rows older than 12 months are reviewed and deleted quarterly.
+
+### Monitoring
+
+Alert on `google_auth_permanent`, `sheet_contract_invalid`, `dlq_poisoned` and `dlq_oldest_age_exceeded`. The queue-age threshold is 15 minutes.
+
+### Delivery semantics
+
+Delivery is at least once with practical duplicate suppression: each submission keeps one opaque `submissionId`, and queued deliveries deduplicate on it. Rare duplicates remain possible after concurrent or client-level ambiguous failures.
+
+### Deployment commands
+
+```bash
+npx wrangler pages secret put GOOGLE_OAUTH_CLIENT_ID --project-name tccane-website
+npx wrangler pages secret put GOOGLE_OAUTH_CLIENT_SECRET --project-name tccane-website
+npx wrangler pages secret put GOOGLE_OAUTH_REFRESH_TOKEN --project-name tccane-website
+npx wrangler pages secret put GOOGLE_SPREADSHEET_ID --project-name tccane-website
+npx wrangler pages secret put TURNSTILE_SECRET_KEY --project-name tccane-website
+
+npx wrangler secret put GOOGLE_OAUTH_CLIENT_ID --config wrangler.retry.toml
+npx wrangler secret put GOOGLE_OAUTH_CLIENT_SECRET --config wrangler.retry.toml
+npx wrangler secret put GOOGLE_OAUTH_REFRESH_TOKEN --config wrangler.retry.toml
+npx wrangler secret put GOOGLE_SPREADSHEET_ID --config wrangler.retry.toml
+npm run retry:deploy
+```
 

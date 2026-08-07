@@ -6,9 +6,11 @@ if [[ "${SMOKE:-}" != "1" ]]; then
   exit 0
 fi
 BASE_URL="${BASE_URL:-http://127.0.0.1:8788}"
+smoke_output="$(mktemp -t tccane-interest-smoke.XXXXXX)"
+trap 'rm -f "$smoke_output"' EXIT
 curl -sS -X POST "$BASE_URL/api/interest" \
   -H 'content-type: application/json' \
-  -d '{"firstName":"Test","lastName":"User","email":"test-smoke@example.com","turnstileToken":"dev","company":""}' \
-  | tee /tmp/interest-smoke.json
-grep -q '"ok":true' /tmp/interest-smoke.json
+  -d '{"firstName":"Integration","lastName":"Check","email":"integration-check@example.invalid","turnstileToken":"dev","company":""}' \
+  > "$smoke_output"
+grep -Eq '"status":"(recorded|accepted)"' "$smoke_output"
 echo "smoke ok"
