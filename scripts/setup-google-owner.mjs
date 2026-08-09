@@ -1,3 +1,6 @@
+import 'dotenv/config';
+
+
 import { timingSafeEqual, randomBytes } from 'node:crypto';
 import { chmod, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';

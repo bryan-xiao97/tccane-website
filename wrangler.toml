@@ -5,12 +5,12 @@ pages_build_output_dir = "."
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT_KV"
-id = "REPLACE_WITH_RATE_LIMIT_KV_ID"
+id = "38a057da08d74254854b3b4a9fcb9cf4"
 preview_id = "REPLACE_WITH_RATE_LIMIT_KV_PREVIEW_ID"
 
 [[kv_namespaces]]
 binding = "DLQ_KV"
-id = "REPLACE_WITH_DLQ_KV_ID"
+id = "63dc821d849d41aea8ab64ed4ca2ec96"
 preview_id = "REPLACE_WITH_DLQ_KV_PREVIEW_ID"
 
 [vars]

@@ -26,3 +26,11 @@ dist/
 
 # One-time local Google OAuth setup artifacts
 .owner-setup-*
+
+.env
+.env.*
+!.env.example
+
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
