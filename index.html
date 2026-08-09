@@ -418,6 +418,42 @@
           <p class="eyebrow eyebrow--onInverse">Get involved</p>
           <h2 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-h2);line-height:1.15;color:var(--tc-white);margin:0 0 1rem">Lend your hands to Great Love.</h2>
           <p style="color:var(--tc-cloud);max-width:52ch;margin:0 auto 2rem">Whether you want to join a chapter, start one at your school, or simply ask a question, the Northeast Regional Advisors would love to hear from you.</p>
+          <div class="interest-panel" id="interest-panel">
+            <form class="interest-form" id="interest-form" novalidate>
+              <div class="interest-form__heading">
+                <h3>Tell us you're interested</h3>
+                <p>Share your contact information and a Northeast Regional Advisor will follow up.</p>
+              </div>
+              <div class="interest-form__fields">
+                <div class="interest-field">
+                  <label for="interest-first-name">First name</label>
+                  <input id="interest-first-name" name="firstName" type="text" autocomplete="given-name" maxlength="100" required>
+                </div>
+                <div class="interest-field">
+                  <label for="interest-last-name">Last name</label>
+                  <input id="interest-last-name" name="lastName" type="text" autocomplete="family-name" maxlength="100" required>
+                </div>
+                <div class="interest-field interest-field--wide">
+                  <label for="interest-email">Email address</label>
+                  <input id="interest-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                </div>
+              </div>
+              <div class="interest-form__trap" aria-hidden="true">
+                <label for="interest-company">Company</label>
+                <input id="interest-company" name="company" type="text" tabindex="-1" autocomplete="off">
+              </div>
+              <div id="interest-turnstile" class="interest-form__turnstile"></div>
+              <p id="interest-form-status" class="interest-form__status" role="status" aria-live="polite"></p>
+              <button id="interest-submit" class="btn btn--primary btn--lg" type="submit">
+                <span class="interest-submit__idle">Send my interest</span>
+                <span class="interest-submit__busy" hidden>Sending…</span>
+              </button>
+            </form>
+            <section id="interest-success" class="interest-success" tabindex="-1" hidden aria-labelledby="interest-success-title">
+              <h3 id="interest-success-title">Thank you for reaching out.</h3>
+              <p>A Northeast Regional Advisor will follow up using the email you provided.</p>
+            </section>
+          </div>
           <div style="display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center">
             <a class="btn btn--onNavy btn--lg" href="mailto:tcca.neregion@us.tzuchi.org">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1.15em;height:1.15em;flex-shrink:0">
@@ -484,6 +520,6 @@
   </main>
 </div>
 
-<script src="app.js" defer></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>

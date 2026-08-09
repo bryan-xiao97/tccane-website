@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Sheets Interest Storage — Session Log</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17212b;
+      --muted: #5c6875;
+      --line: #d8dee6;
+      --soft: #f5f7fa;
+      --good: #3f815c;
+      --good-bg: #eaf6ef;
+      --warn: #a45c5c;
+      --warn-bg: #faf1f1;
+      --accent: #245a82;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(100% - 40px, 1040px);
+      margin: 0 auto;
+      padding: 44px 0 72px;
+    }
+
+    h1, h2, h3 { line-height: 1.2; color: #101820; }
+
+    h1 { margin: 0 0 10px; font-size: 2.05rem; letter-spacing: -0.025em; }
+    h2 { margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--line); font-size: 1.4rem; }
+    h3 { margin: 24px 0 10px; font-size: 1.08rem; }
+
+    p, ul, ol { margin: 0 0 14px; }
+    ul, ol { padding-left: 24px; }
+    li + li { margin-top: 5px; }
+
+    code {
+      padding: 1px 4px;
+      border-radius: 4px;
+      background: #edf1f5;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.92em;
+      overflow-wrap: anywhere;
+    }
+
+    table {
+      width: 100%;
+      margin: 12px 0 22px;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th, td {
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    th { background: var(--soft); font-weight: 650; }
+
+    .metadata { color: var(--muted); }
+    .badge {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 2px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge.good { color: var(--good); background: var(--good-bg); }
+    .badge.warn { color: var(--warn); background: var(--warn-bg); }
+
+    @media print {
+      @page { margin: 0.65in; }
+      body { font-size: 10.5pt; }
+      main { width: 100%; padding: 0; }
+      h2, h3 { break-after: avoid; }
+      table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section aria-labelledby="title-block">
+    <h1>Google Sheets Interest Storage — Session Log</h1>
+    <p class="metadata">
+      <strong>Date:</strong> 2026-08-06 &nbsp;·&nbsp;
+      <strong>Overall outcome:</strong> <span class="badge good">completed</span> implementation merge-ready; integration decision pending (user-owned) &nbsp;·&nbsp;
+      <strong>Evaluation mode:</strong> subagent
+    </p>
+  </section>
+
+  <section aria-labelledby="goal">
+    <h2>Session goal</h2>
+    <h3>Purpose</h3>
+    <p>Understand the Google Sheets Interest Submission Storage functional spec, write a bite-sized TDD implementation plan for replacing the Bloomerang Volunteer destination of <code>POST /api/interest</code> with Google Sheets, then (per the user's choice) execute that plan subagent-by-subagent with per-task reviews and a final whole-branch review.</p>
+
+    <h3>Success criteria</h3>
+    <p><strong>Stated</strong> (from the functional spec): every valid submission creates one complete Google Sheets row or is durably retained for retry; no more than one row per submission ID after ambiguous failures (stable submission ID + retry-time ID lookup); the public endpoint retains its request contract, validation, rate limiting, Turnstile, and failure behavior; statuses <code>recorded</code> (immediate) / <code>accepted</code> (queued); row schema exactly <code>submissionId, submittedAtUtc, firstName, lastName, email</code> with RAW input and INSERT_ROWS; <code>google-auth-library</code> only; credentials only in an encrypted Cloudflare secret; no active source/test/config/example/README depends on Bloomerang; dated artifacts under <code>references/</code> preserved; the sheet is never created or repaired at runtime.</p>
+    <p><strong>Inferred</strong>: a merge-ready branch — evidence of a passing test suite, per-task reviews, a whole-branch review, and honest completion claims.</p>
+
+    <h3>Goal shifts</h3>
+    <p>Original intent (comprehension + plan) was expanded by the user to full subagent-driven execution (original → final). <code>continue</code> and the close-the-loop wrap-up were resumes/extensions, not redirections. No goal was abandoned.</p>
+  </section>
+
+  <section aria-labelledby="outcome">
+    <h2>Outcome</h2>
+    <table>
+      <thead>
+        <tr><th style="width:26%">Goal</th><th style="width:14%">Status</th><th>Evidence</th><th style="width:24%">Gaps</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Read the spec and explore the codebase</td>
+          <td><span class="badge good">completed</span></td>
+          <td>Read the functional spec HTML; inspected <code>functions/lib/*</code>, <code>tests/*</code>, <code>wrangler.toml</code>, <code>.dev.vars.example</code>, <code>README.md</code>, prior plan and TDD. Baseline recorded: 44 tests pass.</td>
+          <td>None.</td>
+        </tr>
+        <tr>
+          <td>Write the implementation plan</td>
+          <td><span class="badge good">completed</span></td>
+          <td><code>references/plans/2026-08-05-google-sheets-interest-storage.md</code> — 5 TDD tasks with exact code.</td>
+          <td>Contained a range-encoding self-contradiction and a Node-engines mismatch; both were caught and resolved during execution.</td>
+        </tr>
+        <tr>
+          <td>Subagent-driven execution of the plan</td>
+          <td><span class="badge good">completed</span></td>
+          <td>6 commits on <code>interest-form</code> (<code>26f4b96..a2b70d9</code>); every task had a fresh implementer and an approving task reviewer; final whole-branch review (<code>7acc4f5..11bacb3</code>) verdict "Ready to merge — Yes"; 2 Important findings fixed in one scoped wave (<code>a2b70d9</code>); final suite 66/66. All stated spec criteria implemented per tests.</td>
+          <td>None in code. Real-credential smoke (README step 5) is a pre-deploy gate not yet run.</td>
+        </tr>
+        <tr>
+          <td>Resume after a cancelled review dispatch (<code>continue</code>)</td>
+          <td><span class="badge good">completed</span></td>
+          <td>The Task 4 review was re-dispatched and completed with approval (69/69 at that point).</td>
+          <td>None.</td>
+        </tr>
+        <tr>
+          <td>Summarize the work and close the loop</td>
+          <td><span class="badge good">completed</span></td>
+          <td>Open threads enumerated and this dated session log written under <code>references/session-logs/</code>.</td>
+          <td>Session ended at the integration decision point — the user has not yet chosen merge / PR / keep.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="friction">
+    <h2>Friction &amp; root causes</h2>
+    <table>
+      <thead>
+        <tr><th style="width:38%">What happened</th><th style="width:28%">Impact</th><th style="width:20%">Root-cause label</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 2 plan self-contradiction: the brief's <code>encodeURIComponent(range)</code> vs its own raw-colon test URLs (<code>Submissions!A:A</code>) cannot both pass.</td>
+          <td>Implementer kept the tests verbatim, made a one-line change (dropped range encoding), flagged <code>DONE_WITH_CONCERNS</code>; reviewer approved; 65/65 green. Net positive — the process surfaced the plan defect.</td>
+          <td>Wrong assumption</td>
+          <td>The plan assumed the encoded URL matched its own assertions; it did not.</td>
+        </tr>
+        <tr>
+          <td>One retry-worker review dispatch was cancelled, then re-dispatched.</td>
+          <td>Small delay; the review completed and approved (69/69).</td>
+          <td>Process miss</td>
+          <td>Dispatch hiccup, not a capability gap.</td>
+        </tr>
+        <tr>
+          <td>The plan's <code>git add -A</code> assumed a clean tree; the working tree held pre-existing <code>doc/</code> deletions and untracked <code>references/</code>.</td>
+          <td>Controller overrode the step to avoid sweeping unrelated changes; the pre-existing state was left uncommitted. Correct judgment call, but the plan instruction was unsafe as written.</td>
+          <td>Wrong assumption</td>
+          <td>Plan assumed a clean working tree at commit time.</td>
+        </tr>
+        <tr>
+          <td>Final-review finding: malformed/expired <code>GOOGLE_SERVICE_ACCOUNT</code> passes the truthiness gate; the token failure was swallowed as retryable, returning 200 <code>accepted</code> with 12 DLQ churns instead of 500.</td>
+          <td>Real bug caught before merge; fixed in one scoped wave (<code>a2b70d9</code>: validation gate → 500, token errors classified by <code>response.status</code>). Per-task reviews missed it; only the whole-branch review caught it.</td>
+          <td>Wrong assumption</td>
+          <td>Assumed a truthy secret is a valid secret; no JSON shape validation at the gate.</td>
+        </tr>
+        <tr>
+          <td>The real <code>google-auth-library</code> JWT path is never exercised under <code>nodejs_compat</code> by unit tests (fake client injected).</td>
+          <td>Noted as a pre-deploy smoke gate (README step 5), not a code defect — deliberately deferred with honest disclosure.</td>
+          <td>Other</td>
+          <td>Requires real credentials and a deployed environment to exercise; out of scope for unit tests.</td>
+        </tr>
+        <tr>
+          <td>Plan claims Node 20+, but <code>google-auth-library@11</code> declares <code>engines node&gt;=22</code>.</td>
+          <td>Informational only (local Node v26, workerd <code>nodejs_compat</code>); plan text remains slightly inaccurate.</td>
+          <td>Missing context or knowledge</td>
+          <td>Engine floor of the resolved dependency was not known at plan time.</td>
+        </tr>
+        <tr>
+          <td>Pre-existing unrelated working-tree changes.</td>
+          <td>Out of session scope; handled by the controller and intentionally left uncommitted.</td>
+          <td>Other</td>
+          <td>Belongs to the organization's in-progress reorg, not this feature.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="worked">
+    <h2>What worked</h2>
+    <ul>
+      <li>Exact-code TDD plan made each task directly implementable and reviewable by fresh subagents with no shared context.</li>
+      <li>Strict per-task reviewer separation (fresh subagent per task, review gate after each) produced real findings and kept each task independently green.</li>
+      <li>The final whole-branch review — beyond per-task approval — caught the malformed-secret misclassification bug before merge.</li>
+      <li>A single scoped fix wave (one fix subagent + one scoped re-review) resolved the final-review findings with no new breakage.</li>
+      <li>Controller judgment overrode the plan's risky <code>git add -A</code>, keeping unrelated working-tree changes out of the commits.</li>
+      <li>Evidence-before-assertions throughout: suite counts recorded at every stage (44 → 47 → 65 → 68 → 69 → 63 → 66).</li>
+      <li>The <code>DONE_WITH_CONCERNS</code> report kept a plan defect visible instead of papering it over, and the ledger captured every ruling for recovery after context compaction.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="next-steps">
+    <h2>Next steps</h2>
+    <ol>
+      <li>Decide integration of branch <code>interest-form</code>: merge to <code>main</code> locally, push and open a pull request, or keep the branch as-is (user-owned decision, pending).</li>
+      <li>Before any production deploy, run the real-credential smoke (README step 5): one real <code>POST /api/interest</code> → one sheet row; manually replay a seeded DLQ record → no duplicate row. This proves the <code>google-auth-library</code> JWT path under <code>nodejs_compat</code> and real-sheet dedup.</li>
+      <li>Optional: correct the plan's Node 20+ claim (<code>google-auth-library@11</code> requires Node &gt;= 22) if the plan is reused.</li>
+      <li>Optional: reconcile the plan's range-encoding line with the raw A1-range implementation if the plan is reused.</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="summary">
+    <h2>Session summary</h2>
+    <p>The session moved from reading the Google Sheets Interest Submission Storage spec, through a written 5-task TDD implementation plan, to full subagent-driven execution on branch <code>interest-form</code>. Each task was implemented by a fresh subagent, reviewed and approved independently, and the whole branch passed a final review with one scoped fix wave, landing six commits and a 66/66 test suite that fully replaces Bloomerang Volunteer with Google Sheets as the interest-submission destination. The session ended at the integration decision point: the work is merge-ready, but whether to merge, open a pull request, or keep the branch remains the user's call, and a real-credential smoke test is still required before any production deploy.</p>
+  </section>
+
+  <section aria-labelledby="artifacts">
+    <h2>Artifacts</h2>
+    <h3>Created</h3>
+    <ul>
+      <li><code>references/plans/2026-08-05-google-sheets-interest-storage.md</code> — implementation plan</li>
+      <li><code>functions/lib/google-token.js</code> — <code>google-auth-library</code> token provider</li>
+      <li><code>functions/lib/sheets.js</code> — Sheets API adapter (ID lookup, RAW append, dedup)</li>
+      <li><code>tests/google-token.test.js</code>, <code>tests/sheets.test.js</code></li>
+      <li><code>references/progress/2026-08-05-google-sheets-interest-storage/</code> — gitignored session ledger, task briefs, implementer reports, review packages</li>
+      <li>This session log: <code>references/session-logs/Google Sheets Interest Storage - Session Log - 2026-08-06.html</code></li>
+    </ul>
+    <h3>Modified</h3>
+    <ul>
+      <li><code>functions/lib/handler.js</code>, <code>functions/lib/dlq.js</code>, <code>functions/scheduled/retry-dlq.js</code></li>
+      <li><code>tests/handler.test.js</code>, <code>tests/dlq.test.js</code>, <code>tests/retry-dlq.test.js</code>, <code>tests/hygiene.test.js</code></li>
+      <li><code>package.json</code> (+ <code>google-auth-library</code> dependency; <code>pages:dev</code> gains <code>--compatibility-flags=nodejs_compat</code>), <code>package-lock.json</code></li>
+      <li><code>wrangler.toml</code> (<code>nodejs_compat</code>; <code>GOOGLE_SHEET_TAB</code>; removed <code>VOLUNTEER_API_BASE</code>)</li>
+      <li><code>.dev.vars.example</code>, <code>README.md</code></li>
+    </ul>
+    <h3>Deleted</h3>
+    <ul>
+      <li><code>functions/lib/volunteer.js</code>, <code>tests/volunteer.test.js</code></li>
+    </ul>
+    <h3>Commits (branch <code>interest-form</code>)</h3>
+    <ul>
+      <li><code>26f4b96</code> feat(middleware): add google-auth-library token provider</li>
+      <li><code>df353b7</code> feat(middleware): add Google Sheets append client with dedup</li>
+      <li><code>476cede</code> feat(middleware): write interest submissions to Google Sheets</li>
+      <li><code>ea48813</code> feat(middleware): drain DLQ retries to Google Sheets</li>
+      <li><code>11bacb3</code> chore(middleware): remove active Bloomerang references</li>
+      <li><code>a2b70d9</code> fix(middleware): 500 on malformed service account, classify token failures</li>
+    </ul>
+    <p class="metadata">Final suite: 66/66 passing (9 test files). Pre-existing unrelated working-tree changes (<code>doc/</code> deletions, untracked <code>references/</code>) remain uncommitted.</p>
+  </section>
+</main>
+</body>
+</html>

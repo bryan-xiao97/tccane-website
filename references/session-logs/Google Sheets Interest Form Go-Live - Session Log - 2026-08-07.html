@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Sheets Interest Form Go-Live - Session Log</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --muted:#5c6473; --line:#d9dde5; --paper:#fffdf8; --panel:#f4f7fb; --good:#176b45; --warn:#8a5200; --bad:#9c2f2f; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3efe7; color: var(--ink); font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 1080px; margin: 32px auto; padding: 42px; background: var(--paper); border: 1px solid #e4ded3; border-radius: 16px; box-shadow: 0 12px 36px rgba(23,32,51,.08); }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { margin: 0 0 10px; font-size: 2rem; }
+    h2 { margin: 34px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #d8e2ef; font-size: 1.35rem; }
+    h3 { margin: 20px 0 6px; font-size: 1rem; }
+    p { margin: 8px 0 14px; }
+    .metadata { color: var(--muted); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: .85rem; }
+    .good { color: var(--good); background: #e5f4ec; }
+    .warn { color: var(--warn); background: #fff0d7; }
+    .bad { color: var(--bad); background: #fde7e7; }
+    .callout { padding: 14px 16px; background: #fff2dc; border-left: 4px solid #c47a10; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; }
+    th, td { padding: 10px 12px; text-align: left; vertical-align: top; border: 1px solid var(--line); }
+    th { background: var(--panel); }
+    code { padding: 1px 4px; border-radius: 4px; background: #eef1f5; font: .92em ui-monospace, SFMono-Regular, Menlo, monospace; }
+    li { margin: 7px 0; }
+    .evidence { color: var(--muted); font-size: .93rem; }
+    @media print { body { background: white; } main { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <section aria-labelledby="title-block">
+    <h1 id="title-block">Google Sheets Interest Form Go-Live - Session Log</h1>
+    <p class="metadata"><strong>Date:</strong> 2026-08-07 &nbsp;·&nbsp; <strong>Overall outcome:</strong> <span class="badge warn">partial</span> &nbsp;·&nbsp; <strong>Evaluation mode:</strong> subagent</p>
+  </section>
+
+  <section aria-labelledby="goal">
+    <h2 id="goal">Session goal</h2>
+    <p>Determine the real state of the latest Google Sheets interest-form work, distinguish code readiness from deployment readiness and provide the next actions required to make the form operational.</p>
+    <h3>Success criteria</h3>
+    <p><strong>Stated:</strong> identify the next steps needed to have the form up and working. <strong>Inferred:</strong> verify the active architecture, current test health, missing credentials and infrastructure, deployment work and production acceptance gates.</p>
+    <h3>Goal shifts</h3>
+    <p>None. The investigation uncovered an architecture discrepancy that must be resolved before deployment.</p>
+  </section>
+
+  <section aria-labelledby="outcome">
+    <h2 id="outcome">Outcome</h2>
+    <p class="callout"><strong>Decision required:</strong> commit <code>510b57c</code> says the implementation was refactored to a public sheet, but that commit changes only reference and provenance files. The active application still uses a personal-owner OAuth2 grant and the Google Sheets API. If “public sheet” is the intended production design, it has not been implemented.</p>
+    <table>
+      <thead><tr><th>Goal</th><th>Status</th><th>Evidence</th><th>Gap</th></tr></thead>
+      <tbody>
+        <tr><td>Establish the current code state</td><td><span class="badge good">completed</span></td><td>Branch <code>interest-form</code> is clean and synced to <code>origin/interest-form</code>. A fresh run passed all 111 tests across 13 files. The retry Worker dry-run bundled successfully.</td><td>None in the tested implementation.</td></tr>
+        <tr><td>Establish environment and infrastructure readiness</td><td><span class="badge warn">partial</span></td><td><code>.dev.vars.example</code> exists.</td><td><code>.dev.vars</code> is missing, Wrangler is unauthenticated and both Wrangler configurations contain placeholder KV IDs.</td></tr>
+        <tr><td>Establish deployment readiness</td><td><span class="badge bad">not completed</span></td><td>The branch is pushed and the runbook is present in <code>README.md</code>.</td><td>No live Pages or retry Worker deployment is evidenced. The Cron Trigger and release integration are not verified.</td></tr>
+        <tr><td>Establish production validation and operations readiness</td><td><span class="badge bad">not completed</span></td><td>Unit coverage includes success, queued delivery, authorization failure and sheet-contract failure paths.</td><td>Local responsive review, staging failure tests, alerts, a real Turnstile production smoke and cleanup remain outstanding.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="friction">
+    <h2 id="friction">Friction &amp; root causes</h2>
+    <table>
+      <thead><tr><th>What happened</th><th>Impact</th><th>Root-cause label</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>The latest commit message describes a public-sheet refactor that is absent from its diff.</td><td>Following the message would produce incorrect setup guidance.</td><td>Wrong assumption</td><td>The runtime and README still require owner OAuth2.</td></tr>
+        <tr><td>Required local and Cloudflare configuration is unavailable.</td><td>The real sheet, bindings and deployments cannot be completed yet.</td><td>Missing tool / capability</td><td>No <code>.dev.vars</code>, no Wrangler login and no real KV IDs are present.</td></tr>
+        <tr><td>The branch is not integrated into <code>main</code>.</td><td>The production release source is unresolved.</td><td>Ambiguous requirements</td><td>The repository does not record whether to merge, open a pull request or deploy the feature branch.</td></tr>
+        <tr><td>Live verification and operations setup were deferred after code completion.</td><td>The feature is not production-ready despite passing tests.</td><td>Process miss</td><td>OAuth, Cloudflare, staging and alerting require operator access outside the codebase.</td></tr>
+        <tr><td>Wrangler initially could not write its diagnostic log outside the workspace.</td><td>Diagnostics were degraded, although the dry-run still bundled and exited.</td><td>Tool or environment failure</td><td>The sandbox denied the default log path. A workspace-safe temporary log path worked for the authentication check.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section aria-labelledby="worked">
+    <h2 id="worked">What worked</h2>
+    <ul>
+      <li>Repository evidence was checked instead of trusting the latest commit message.</li>
+      <li>A fresh test run confirmed 111 of 111 tests still pass.</li>
+      <li>The retry Worker still bundles successfully in a dry-run.</li>
+      <li>No credentials, deployments or application files were changed during the assessment.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="next">
+    <h2 id="next">Next steps</h2>
+    <ol>
+      <li><strong>Confirm the intended architecture.</strong> Deploy the existing owner-OAuth implementation or scope and implement a different public-sheet design. Do not configure production until this is explicit.</li>
+      <li><strong>Choose the release path.</strong> Merge or open a pull request from <code>interest-form</code> into <code>main</code>. Confirm CI runs Node <code>&gt;=22.22.2</code>.</li>
+      <li><strong>Prepare Cloudflare.</strong> Run <code>npx wrangler login</code>, create or identify real <code>RATE_LIMIT_KV</code> and <code>DLQ_KV</code> namespaces, then replace all placeholder IDs. The <code>DLQ_KV</code> IDs must match in <code>wrangler.toml</code> and <code>wrangler.retry.toml</code>.</li>
+      <li><strong>Provision Google access if owner OAuth remains the design.</strong> Create a Google Cloud Web OAuth client with redirect <code>http://127.0.0.1:53682/oauth2/callback</code>, set the consent screen to Production and run <code>npm run setup:google</code> with the designated owner. Confirm the protected <code>TCCANE Interest Submissions</code> spreadsheet, its <code>Submissions</code> tab and local <code>.dev.vars</code> are created.</li>
+      <li><strong>Verify locally.</strong> Run <code>npm run pages:dev</code>, submit at <code>http://127.0.0.1:8788/#involved</code> and inspect the form at 375px and 1280px.</li>
+      <li><strong>Configure Pages.</strong> Add the four Google secrets, <code>TURNSTILE_SECRET_KEY</code>, public variable <code>TURNSTILE_SITE_KEY</code> and <code>GOOGLE_SHEET_TAB=Submissions</code>. Ensure <code>TURNSTILE_SKIP</code> is unset in production.</li>
+      <li><strong>Configure and deploy retries.</strong> Add the same four Google secrets to the retry Worker, bind the shared <code>DLQ_KV</code>, run <code>npm run retry:deploy</code> and verify the five-minute Cron Trigger.</li>
+      <li><strong>Test staging.</strong> Verify a normal row append, a forced retryable Google failure, DLQ enqueue and successful scheduled retry. Also verify revoked OAuth and sheet-header drift produce visible failures.</li>
+      <li><strong>Add monitoring.</strong> Alert on <code>google_auth_permanent</code>, <code>sheet_contract_invalid</code>, <code>dlq_poisoned</code> and <code>dlq_oldest_age_exceeded</code>, with a 15-minute queue-age threshold.</li>
+      <li><strong>Release and smoke test.</strong> Deploy production, submit with a real Turnstile token, confirm the protected sheet receives exactly one row and remove the synthetic smoke row.</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="summary">
+    <h2 id="summary">Session summary</h2>
+    <p>The interest-form code is healthy and pushed, but it is not live-ready. The active system uses owner OAuth2 despite the latest commit message's public-sheet wording. Deployment is blocked by an unresolved architecture choice, missing local OAuth setup, placeholder Cloudflare KV bindings, an unauthenticated Wrangler session and incomplete live verification. Once the architecture is confirmed, the remaining work is operator configuration, deployment and acceptance testing rather than application implementation.</p>
+  </section>
+
+  <section aria-labelledby="artifacts">
+    <h2 id="artifacts">Artifacts</h2>
+    <ul>
+      <li><code>README.md:47</code> - active owner-OAuth setup, deployment and operations runbook.</li>
+      <li><code>wrangler.toml:6</code> - Pages KV bindings with placeholder IDs.</li>
+      <li><code>wrangler.retry.toml:6</code> - retry Worker DLQ binding and five-minute schedule.</li>
+      <li><code>functions/lib/handler.js:38</code> - runtime requirement for OAuth credentials, spreadsheet ID and KV bindings.</li>
+      <li><code>functions/lib/google-token.js:1</code> - active OAuth2 token provider.</li>
+      <li><code>references/session-logs/Google Sheets Interest Form Go-Live - Session Log - 2026-08-07.html</code> - this report.</li>
+    </ul>
+    <p class="evidence">Key checks: <code>npm test</code> passed 111/111; <code>npx wrangler whoami</code> reported unauthenticated; retry Worker dry-run bundled; <code>.dev.vars</code> was absent; git working tree was clean before this report was created.</p>
+  </section>
+</main>
+</body>
+</html>

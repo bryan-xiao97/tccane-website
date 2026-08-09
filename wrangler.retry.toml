@@ -1,0 +1,15 @@
+name = "tccane-interest-retry"
+main = "functions/scheduled/retry-dlq.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[kv_namespaces]]
+binding = "DLQ_KV"
+id = "63dc821d849d41aea8ab64ed4ca2ec96"
+preview_id = "REPLACE_WITH_DLQ_KV_PREVIEW_ID"
+
+[vars]
+GOOGLE_SHEET_TAB = "Submissions"
+
+[triggers]
+crons = ["*/5 * * * *"]

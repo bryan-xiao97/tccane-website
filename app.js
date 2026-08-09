@@ -9,9 +9,18 @@
    .no-js class removed in <head>.
    ============================================================ */
 
+import { initInterestForm } from './interest-form.js';
+
 document.addEventListener('DOMContentLoaded', () => {
   initScrollReveals();
   initNavToggle();
+  initInterestForm().catch(() => {
+    const status = document.getElementById('interest-form-status');
+    if (status) {
+      status.dataset.state = 'error';
+      status.textContent = 'The form is temporarily unavailable. Please email an advisor.';
+    }
+  });
 });
 
 function initNavToggle() {

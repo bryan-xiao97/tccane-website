@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volunteer Interest Middleware — Session Log</title>
+  <meta name="description" content="Session log: Bloomerang Volunteer interest/registration middleware design and implementation" />
+  <style>
+/* ==========================================================================
+   bx-html-branding — house style
+   Warm pastel aesthetic on charcoal text. Adapted from the bx-pptx deck style
+   for readable, easy-to-digest professional HTML documents.
+   Inline this whole file into a <style> block so the document stays one
+   self-contained, shareable, printable file.
+
+   Two document families share these tokens:
+     • Memo / briefing / report / one-pager  → <main class="doc">
+     • Technical design doc (problems→approaches→decision→architecture)
+                                             → <body class="techdoc"> + full-bleed
+                                               .cover / .band / <section>.
+   Everything below the "Technical design kit" divider is opt-in: it never
+   touches the memo classes, so existing memo/one-pager output is unaffected.
+   ========================================================================== */
+
+/* --- Design tokens ------------------------------------------------------- */
+:root {
+  /* Palette (charcoal carries all contrast; tints never go full-strength) */
+  --color-charcoal: #2b2b2b;
+  --color-coral: #fe5f55;
+  --color-caramel: #f0b67f;
+  --color-sand: #d6d1b1;
+  --color-tea: #c7efcf;
+  --color-beige: #eef5db;
+  --color-white: #ffffff;
+
+  /* Semantic roles */
+  --color-text: var(--color-charcoal);
+  --color-text-muted: #595959; /* ~7:1 on white — safe for metadata */
+  --color-bg: var(--color-white);
+  --color-bg-tint: #fbfcf7; /* barely-there page wash; optional */
+  --color-accent: var(--color-coral); /* the one sharp accent — use once */
+  --color-rule: var(--color-sand);
+  --color-rule-soft: #ece8d4;
+
+  /* Semantic STATE system — the meaning behind the colors.
+     Same warm palette, now doing wayfinding: a reader can tell recommended
+     from rejected before reading a word. Derived tints/darks stay in-family
+     (a deeper tea, a paler coral) — no new hues, just readable partners. */
+  --state-good-bg: var(--color-tea); /* recommended / pro / pass / low risk */
+  --state-good-edge: #3a9d78; /* readable deep-tea edge & solid fills */
+  --state-good-text: #1f6b4f; /* readable on white and on tea */
+  --state-warn-bg: #faedd8; /* caution / con / medium risk (pale caramel) */
+  --state-warn-edge: var(--color-caramel);
+  --state-warn-text: #8a5a12; /* readable brown on white / pale caramel */
+  --state-bad-bg: #ffe6e3; /* rejected / disqualified / high risk (pale coral)*/
+  --state-bad-edge: var(--color-coral);
+  --state-bad-text: #9a2b23; /* readable dark coral on white / pale coral */
+  --state-neutral-bg: var(--color-beige); /* settled / index / structural */
+
+  /* Inverted panel — charcoal is the only dark; used sparingly as an anchor
+     (cover masthead, one constraints/emphasis panel). */
+  --panel-bg: var(--color-charcoal);
+  --panel-bg-2: #3b3a38; /* gradient partner */
+  --panel-text: #f4f2ec; /* warm off-white */
+  --panel-text-muted: #cfc9b8;
+  --panel-label: #b3ab97;
+
+  /* Type — three families, fixed roles:
+       sans   → body copy, UI labels
+       serif  → titles & headings (editorial contrast)
+       mono   → eyebrows, indices, captions, tags ("system / technical" signal) */
+  --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+    Georgia, "Times New Roman", serif;
+  --font-mono: "SFMono-Regular", "SF Mono", "Cascadia Code", "JetBrains Mono",
+    Consolas, "Liberation Mono", Menlo, ui-monospace, monospace;
+
+  --text-meta: 0.8125rem; /* 13px */
+  --text-body: 1rem; /* 16px */
+  --text-lead: 1.1875rem; /* 19px */
+  --text-h3: 1.1875rem;
+  --text-h2: clamp(1.4rem, 1.15rem + 1vw, 1.75rem); /* fluid */
+  --text-h1: clamp(2rem, 1.4rem + 2.4vw, 2.75rem); /* fluid */
+  --text-eyebrow: 0.75rem;
+  --leading-body: 1.65;
+
+  /* Rhythm */
+  --measure: 42rem; /* ~70ch reading column */
+  --wrap: 60rem; /* wide layout canvas for the technical-design type */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius: 10px;
+  --bar-width: 4px; /* the vertical accent bar — web analog of the deck's */
+
+  --duration: 150ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Reset / base -------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-tint);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Document shell (memo / briefing / report / one-pager) --------------- */
+.doc {
+  max-width: var(--measure);
+  margin: var(--space-12) auto;
+  padding: var(--space-12) var(--space-8);
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(43, 43, 43, 0.04),
+    0 8px 30px rgba(43, 43, 43, 0.05);
+}
+
+/* One-pagers can run wider and denser */
+.doc--wide {
+  max-width: 56rem;
+}
+
+/* --- Masthead / header --------------------------------------------------- */
+.doc-eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.doc-title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-h1);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Memo-style metadata block (To / From / Date / Re) */
+.doc-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-4);
+  margin: 0 0 var(--space-8);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  font-size: var(--text-meta);
+}
+.doc-meta dt {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.doc-meta dd {
+  margin: 0;
+}
+
+/* Lead paragraph — sets up the document */
+.lead {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-text);
+  margin: 0 0 var(--space-8);
+}
+
+/* --- Headings: serif, with the vertical caramel accent bar (NO underlines) */
+h1,
+h2,
+h3,
+.h2 {
+  font-family: var(--font-serif);
+}
+
+h2,
+.h2 {
+  position: relative;
+  margin: var(--space-12) 0 var(--space-4);
+  padding-left: var(--space-4);
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+h2::before,
+.h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: var(--bar-width);
+  border-radius: 2px;
+  background: var(--color-caramel);
+}
+
+h3,
+.h3 {
+  margin: var(--space-8) 0 var(--space-2);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+/* --- Body copy ----------------------------------------------------------- */
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--color-charcoal);
+  text-decoration: underline;
+  text-decoration-color: var(--color-caramel);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+  transition: text-decoration-color var(--duration) var(--ease);
+}
+a:hover {
+  text-decoration-color: var(--color-coral);
+}
+
+strong {
+  font-weight: 600;
+}
+
+/* Underlined bold inline emphasis — for category labels within lists */
+.label {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-sand);
+  text-underline-offset: 2px;
+}
+
+/* The single sharp accent. Use once per document (memo family). */
+.accent {
+  color: var(--color-coral);
+  font-weight: 600;
+}
+
+ul,
+ol {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-6);
+}
+li {
+  margin-bottom: var(--space-2);
+}
+li::marker {
+  color: var(--color-caramel);
+}
+
+/* Inline code / references */
+code,
+.ref {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.08em 0.36em;
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 4px;
+}
+
+/* --- Callout blocks (tea-green / beige tints) ---------------------------- */
+.callout {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-tea);
+  border-left: var(--bar-width) solid var(--color-caramel);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.callout > :last-child {
+  margin-bottom: 0;
+}
+.callout-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Alternate tint, pairs with .callout in side-by-side layouts */
+.callout--beige {
+  background: var(--color-beige);
+}
+
+/* The one key takeaway — coral edge. Use at most once per document. */
+.callout--key {
+  background: var(--color-beige);
+  border-left-color: var(--color-coral);
+}
+
+/* --- Stat row (one-pagers) ----------------------------------------------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-8) 0;
+}
+.stat {
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-beige);
+  border-radius: var(--radius);
+}
+.stat--tea {
+  background: var(--color-tea);
+}
+.stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.stat-label {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-meta);
+  color: var(--color-text-muted);
+}
+/* Promote a single stat to the document's sharp accent */
+.stat--accent .stat-value {
+  color: var(--color-coral);
+}
+
+/* --- Tables -------------------------------------------------------------- */
+table {
+  width: 100%;
+  margin: var(--space-6) 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+caption {
+  margin-bottom: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: left;
+}
+th {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-sand);
+}
+td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-rule-soft);
+  vertical-align: top;
+}
+tbody tr:nth-child(even) {
+  background: var(--color-bg-tint);
+}
+/* Tabular figures for number columns */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Pills / tags -------------------------------------------------------- */
+.tag {
+  display: inline-block;
+  padding: 0.1rem var(--space-3);
+  border-radius: 999px;
+  background: var(--color-sand);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  line-height: 1.6;
+}
+.tag--tea {
+  background: var(--color-tea);
+}
+.tag--accent {
+  background: var(--color-coral);
+  color: var(--color-white);
+}
+
+/* --- Dividers ------------------------------------------------------------ */
+hr {
+  margin: var(--space-12) 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* --- Footer -------------------------------------------------------------- */
+.doc-footer {
+  margin-top: var(--space-12);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-meta);
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* ==========================================================================
+   TECHNICAL DESIGN KIT  (opt-in — use with <body class="techdoc">)
+   Full-bleed sectioned layout + the motif vocabulary a design doc needs:
+   cover, TOC, numbered problem sections, approach cards, recommendation,
+   decision-record & comparison tables, a data-flow rail, severity pills.
+   None of these classes touch the memo family above.
+   ========================================================================== */
+
+/* --- Two-track layout: wide canvas + narrow reading measure -------------- */
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 5vw, 3.5rem);
+}
+.col {
+  max-width: var(--measure);
+} /* hold prose to the measure inside the wide canvas */
+
+.techdoc {
+  background: var(--color-bg-tint);
+}
+.techdoc section {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 0;
+}
+.techdoc section:last-of-type {
+  padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+/* --- Eyebrow with a tick-rule (mono) ------------------------------------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--color-caramel);
+  flex: none;
+}
+
+.lede {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* --- Cover masthead (inverted charcoal anchor) --------------------------- */
+.cover {
+  background: var(--panel-bg);
+  background-image: linear-gradient(
+    180deg,
+    var(--panel-bg-2) 0%,
+    var(--panel-bg) 60%
+  );
+  color: var(--panel-text);
+  border-top: 3px solid var(--color-caramel);
+  padding: clamp(2.75rem, 7vw, 5.5rem) 0 clamp(2.25rem, 5vw, 3.75rem);
+}
+.cover .eyebrow {
+  color: var(--panel-label);
+}
+.cover .eyebrow::before {
+  background: var(--color-caramel);
+}
+.cover h1 {
+  margin: 0 0 0.45em;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 6vw, 3.1rem);
+  line-height: 1.06;
+  letter-spacing: -0.018em;
+  max-width: 20ch;
+  text-wrap: balance;
+  color: var(--color-white);
+}
+.cover .sub {
+  max-width: 56ch;
+  margin: 0 0 2.4rem;
+  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  color: var(--panel-text-muted);
+}
+
+/* Metadata grid (Date / Owner / Surface / Status …) */
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.meta div {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.85rem 1rem;
+}
+.meta dt {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--panel-label);
+}
+.meta dd {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--panel-text);
+}
+
+/* --- Band (alternate full-bleed surface) --------------------------------- */
+.band {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+/* --- Two-column summary grid --------------------------------------------- */
+.grid-2 {
+  display: grid;
+  gap: clamp(1.25rem, 4vw, 2.75rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .grid-2 {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
+/* Definition list for decided inputs */
+.deflist {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+.deflist .row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.4fr) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dotted var(--color-rule);
+}
+.deflist .row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.deflist dt {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.deflist dd {
+  margin: 0;
+}
+.deflist strong {
+  color: var(--color-charcoal);
+}
+
+/* Priorities / tie-breaker panel */
+.priorities {
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.5rem;
+}
+.priorities h4 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 1rem;
+}
+.pri-pill {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  padding: 0.28em 0.7em;
+  border-radius: 999px;
+  background: var(--color-beige);
+  border: 1px solid var(--color-rule-soft);
+}
+.pri-pill.lead {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+  border-color: var(--color-charcoal);
+}
+.chain .arrow {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* --- Advisory / note callout (caution state) ----------------------------- */
+.advisory {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem 1.1rem;
+  margin-top: 2rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--state-warn-bg);
+  border: 1px solid var(--state-warn-edge);
+  border-left: 4px solid var(--state-warn-edge);
+  border-radius: 8px;
+}
+.advisory .mark {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--state-warn-text);
+}
+.advisory h4 {
+  margin: 0 0 0.3rem;
+  color: var(--state-warn-text);
+  font-size: 1.02rem;
+}
+.advisory p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--state-warn-text);
+}
+
+/* --- Contents index (TOC) ------------------------------------------------ */
+.toc {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 1.4rem;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-white);
+}
+@media (min-width: 680px) {
+  .toc {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.toc a {
+  display: flex;
+  gap: 0.8rem;
+  align-items: baseline;
+  padding: 0.8rem 1.1rem;
+  text-decoration: none;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-rule-soft);
+  transition: background var(--duration) var(--ease);
+}
+@media (min-width: 680px) {
+  .toc a:nth-child(odd) {
+    border-right: 1px solid var(--color-rule-soft);
+  }
+}
+.toc a:hover {
+  background: var(--color-bg-tint);
+}
+.toc .n {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--state-warn-text);
+  min-width: 1.6em;
+}
+.toc .t {
+  font-size: 0.92rem;
+}
+
+/* --- Clean bullet lists -------------------------------------------------- */
+ul.clean {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.1em;
+  display: grid;
+  gap: 0.7rem;
+}
+ul.clean > li {
+  position: relative;
+  padding-left: 1.3rem;
+  margin: 0;
+}
+ul.clean > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-caramel);
+}
+
+/* --- Constraints / emphasis panel (inverted charcoal anchor) ------------- */
+.constraints {
+  margin-top: 1.6rem;
+  padding: clamp(1.25rem, 3vw, 1.9rem);
+  background: var(--panel-bg);
+  border-radius: 12px;
+}
+.constraints .eyebrow {
+  color: var(--panel-label);
+}
+.constraints h3 {
+  color: var(--color-white);
+}
+.constraints ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.constraints li {
+  position: relative;
+  padding-left: 1.4rem;
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--panel-text-muted);
+}
+.constraints li::before {
+  content: "\00a7"; /* § */
+  position: absolute;
+  left: 0;
+  color: var(--color-caramel);
+  font-family: var(--font-serif);
+}
+.constraints code {
+  background: rgba(240, 182, 127, 0.16);
+  border-color: rgba(240, 182, 127, 0.32);
+  color: #f6d8b8;
+}
+.constraints strong {
+  color: var(--color-white);
+}
+
+/* --- Problem "case file" section header ---------------------------------- */
+.problem {
+  border-top: 2px solid var(--color-charcoal);
+  padding-top: 1.6rem;
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+.problem-head {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.problem-head h2 {
+  margin: 0;
+  padding-left: 0;
+}
+.problem-head h2::before {
+  content: none;
+} /* the number chip replaces the bar here */
+.pnum {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-charcoal);
+  border-radius: 6px;
+  padding: 0.2em 0.6em;
+  letter-spacing: 0.04em;
+}
+.stake {
+  margin: 0.4rem 0 1.6rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--color-beige);
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+}
+.stake b {
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+
+/* --- Approach cards ------------------------------------------------------ */
+.approaches {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  margin: 1.2rem 0 1.6rem;
+}
+@media (min-width: 720px) {
+  .approaches {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+}
+.approach {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+}
+/* the recommended option — tea ring + faint gradient */
+.approach.rec {
+  border-color: var(--state-good-edge);
+  box-shadow: 0 0 0 1px var(--state-good-edge);
+  background: linear-gradient(180deg, #f2fbf5 0%, var(--color-white) 60%);
+}
+.approach .a-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.approach .badge {
+  flex: none;
+  width: 1.7em;
+  height: 1.7em;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-charcoal);
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 6px;
+}
+.approach.rec .badge {
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-color: var(--state-good-edge);
+}
+.approach .a-name {
+  font-family: var(--font-serif);
+  font-size: 1.04rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.approach .reco-tag,
+.approach .killed {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2em 0.5em;
+  border-radius: 999px;
+}
+.approach .reco-tag {
+  color: var(--state-good-text);
+  background: var(--state-good-bg);
+}
+.approach .killed {
+  color: var(--state-bad-text);
+  background: var(--state-bad-bg);
+}
+.approach p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+/* pro / con markers */
+.pc {
+  position: relative;
+  margin: 0;
+  padding-left: 1.3rem;
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+}
+.pc::before {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+.pc.pro::before {
+  content: "+";
+  color: var(--state-good-edge);
+}
+.pc.con::before {
+  content: "\2212"; /* − */
+  color: var(--state-warn-edge);
+}
+
+/* --- Scrollable table wrapper + comparison-table helpers ----------------- */
+.table-scroll {
+  overflow-x: auto;
+  margin: 1.2rem 0;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  background: var(--color-white);
+}
+.table-scroll table {
+  margin: 0;
+}
+.table-scroll caption {
+  padding: 0.9rem 1rem 0.2rem;
+  margin: 0;
+}
+.table-scroll th,
+.table-scroll td {
+  border-bottom: 1px solid var(--color-rule-soft);
+  padding: 0.7rem 0.95rem;
+}
+.table-scroll thead th {
+  background: var(--color-bg-tint);
+  border-bottom: 1px solid var(--color-sand);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+}
+.table-scroll tbody tr:nth-child(even) {
+  background: transparent;
+}
+.table-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+/* row-label (dimension) column */
+th.dim,
+td.dim {
+  font-weight: 600;
+  color: var(--color-charcoal);
+  background: var(--color-bg-tint);
+  white-space: nowrap;
+}
+/* the recommended column, highlighted the same green as the winning card */
+.col-rec {
+  background: rgba(58, 157, 120, 0.08);
+}
+th.col-rec {
+  background: var(--state-good-bg);
+  color: var(--state-good-text);
+}
+.col-rec-tag {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--state-good-text);
+}
+/* a "bad" cell — the disqualifying fact */
+td.bad,
+td.bad strong {
+  color: var(--state-bad-text);
+}
+
+/* --- Recommendation callout (the chosen pick) ---------------------------- */
+.recommend {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.1rem;
+  align-items: start;
+  margin: 1.4rem 0;
+  padding: 1.1rem 1.4rem;
+  background: linear-gradient(180deg, #f1faf4 0%, #fbfefc 100%);
+  border: 1px solid var(--state-good-edge);
+  border-left: 4px solid var(--state-good-edge);
+  border-radius: 8px;
+}
+.recommend .rl {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--state-good-text);
+}
+.recommend .pick {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+.recommend p {
+  grid-column: 1 / -1;
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+}
+.recommend .pick .pin {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  margin-right: 0.4rem;
+  vertical-align: 0.06em;
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+}
+
+/* --- Data-flow pipeline rail --------------------------------------------- */
+.flow {
+  display: grid;
+  gap: 0;
+  margin: 1.4rem 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+.step .rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.step .dot {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  background: var(--color-white);
+  border: 2px solid var(--color-sand);
+}
+.step .line {
+  flex: 1;
+  width: 2px;
+  min-height: 0.6rem;
+  background: var(--color-rule);
+}
+.step:last-child .line {
+  display: none;
+}
+.step .body {
+  padding-bottom: 1rem;
+}
+.step .body b {
+  color: var(--color-charcoal);
+}
+.step .body p {
+  margin: 0.1rem 0 0;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+/* step states */
+.step.guard .dot {
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-color: var(--state-good-edge);
+}
+.step.guard .body b {
+  color: var(--state-good-text);
+}
+.step.gate .dot {
+  background: var(--color-beige);
+  border-color: var(--color-caramel);
+}
+.step.fail .dot {
+  background: var(--state-warn-bg);
+  border-color: var(--state-warn-edge);
+  color: var(--state-warn-text);
+}
+.step.fail .body b {
+  color: var(--state-warn-text);
+}
+.flow-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+.flow-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.flow-key i {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* --- Numbered process list (decimal-leading-zero) ------------------------ */
+ol.steps {
+  counter-reset: s;
+  list-style: none;
+  padding: 0;
+  margin: 1.2rem 0;
+  display: grid;
+  gap: 0.75rem;
+}
+ol.steps li {
+  counter-increment: s;
+  position: relative;
+  padding-left: 2.6rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+ol.steps li::before {
+  content: counter(s, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--state-warn-text);
+  background: var(--color-beige);
+  border-radius: 5px;
+  padding: 0.18em 0.45em;
+}
+
+/* --- Risk severity pills ------------------------------------------------- */
+.sev {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.5em;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.sev.high {
+  background: var(--state-bad-bg);
+  color: var(--state-bad-text);
+}
+.sev.med {
+  background: var(--state-warn-bg);
+  color: var(--state-warn-text);
+}
+.sev.low {
+  background: var(--state-good-bg);
+  color: var(--state-good-text);
+}
+
+/* --- Open-question cards ------------------------------------------------- */
+.questions {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.q {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 8px;
+}
+.q .qtag {
+  height: fit-content;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 5px;
+  padding: 0.2em 0.5em;
+}
+.q p {
+  margin: 0;
+  font-size: 0.93rem;
+}
+
+/* --- Technical-design footer --------------------------------------------- */
+.techdoc footer {
+  margin-top: 3rem;
+  padding: 2rem 0 3rem;
+  background: var(--color-white);
+  border-top: 1px solid var(--color-rule);
+}
+.techdoc footer p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+.techdoc footer .src {
+  font-family: var(--font-mono);
+}
+
+/* --- Print / PDF --------------------------------------------------------- */
+@media print {
+  :root {
+    --measure: 100%;
+  }
+  body {
+    background: var(--color-white);
+  }
+  .doc {
+    margin: 0;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  /* keep inverted panels legible and ink-frugal in print */
+  .cover,
+  .constraints {
+    background: var(--color-white) !important;
+    color: var(--color-charcoal) !important;
+    border: 1px solid var(--color-rule);
+  }
+  .cover h1,
+  .cover .sub,
+  .cover .meta dd,
+  .constraints h3,
+  .constraints li,
+  .constraints strong {
+    color: var(--color-charcoal) !important;
+  }
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  .callout,
+  .stat,
+  table,
+  figure,
+  .approach,
+  .recommend,
+  .step,
+  .q {
+    break-inside: avoid;
+  }
+  a {
+    text-decoration-color: var(--color-sand);
+  }
+}
+
+/* --- Motion preferences -------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* --- Small screens ------------------------------------------------------- */
+@media (max-width: 40rem) {
+  .doc {
+    margin: 0;
+    padding: var(--space-8) var(--space-6);
+    border: 0;
+    border-radius: 0;
+  }
+  .doc-meta {
+    grid-template-columns: 1fr;
+  }
+  .doc-footer {
+    flex-direction: column;
+  }
+  .deflist .row {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+<main class="doc">
+  <header class="doc-header">
+    <p class="eyebrow">Session log · TCCANE website</p>
+    <h1>Volunteer interest middleware</h1>
+    <p class="meta">2026-08-02 · Overall outcome: <strong>partial</strong> · Evaluation mode: <strong>subagent</strong></p>
+  </header>
+
+  <section>
+    <h2>Session goal</h2>
+    <p><strong>Purpose:</strong> Design and implement Cloudflare Workers middleware that accepts First / Last / Email submissions and registers users via the Bloomerang Volunteer API (API key later), after assessing what the API allows — then close the loop without agent-owned git merge/PR.</p>
+    <h3>Success criteria</h3>
+    <ul>
+      <li><strong>Stated:</strong> Assess Volunteer API feasibility; produce a technical design with trade-offs; write a middleware implementation plan; execute that plan subagent-driven; close the loop with a durable session log.</li>
+      <li><strong>Inferred:</strong> Tested <code>POST /api/interest</code> without a live API key in CI; form UI out of scope for the middleware plan.</li>
+    </ul>
+    <h3>Goal shifts</h3>
+    <ol>
+      <li>Interest form + full stack (Volunteer + Workers) → technical design lock-in.</li>
+      <li>Clarified: Volunteer write is <em>registration</em> (full user account), not a lightweight list; Custom Questions need an existing <code>userId</code>.</li>
+      <li>Middleware-only plan (defer API key) → SDD implementation on <code>interest-form</code>.</li>
+      <li>User-owned git operations; close the loop.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Outcome</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="dim">Goal</th>
+            <th>Status</th>
+            <th>Evidence</th>
+            <th>Gaps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="dim">Assess Volunteer API feasibility</td>
+            <td><span class="sev low">completed</span></td>
+            <td>OpenAPI 4.4.0 reviewed; <code>POST .../users</code>, Bearer auth, field mapping; registration vs list clarified</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="dim">Technical design (TDD)</td>
+            <td><span class="sev low">completed</span></td>
+            <td><code>references/TDDs/Interest Form Bloomerang Volunteer - Technical Design - 08.02.html</code>; priorities Security &gt; Reliability &gt; Speed</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="dim">Middleware implementation plan</td>
+            <td><span class="sev low">completed</span></td>
+            <td><code>references/plans/2026-08-02-volunteer-registration-middleware.md</code></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="dim">Subagent-driven middleware build</td>
+            <td><span class="sev low">completed</span></td>
+            <td>Tasks 1–10 + fix <code>7acc4f5</code>; 44/44 tests; artifacts under <code>functions/</code>, <code>tests/</code>, smoke script</td>
+            <td>Live key, KV ids, cron Worker not provisioned (ops)</td>
+          </tr>
+          <tr>
+            <td class="dim">End-to-end interest form (original ask)</td>
+            <td><span class="sev med">partial</span></td>
+            <td>Server path designed and coded; registration semantics locked</td>
+            <td>No frontend form UI; no live Volunteer call; no CF deploy</td>
+          </tr>
+          <tr>
+            <td class="dim">Close the loop</td>
+            <td><span class="sev low">completed</span></td>
+            <td>This session log; user handles git</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Friction &amp; root causes</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th class="dim">What happened</th>
+            <th>Impact</th>
+            <th>Root cause</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="dim">Early path mixed existing CRM/Bloomerang.js design with Volunteer</td>
+            <td>Extra disambiguation before locking Volunteer-only</td>
+            <td>Missing context or knowledge</td>
+            <td>Two Bloomerang products share branding; prior July design targeted CRM</td>
+          </tr>
+          <tr>
+            <td class="dim">Assumed lighter “interest list” until registration semantics forced</td>
+            <td>Design risk until corrected; Custom Questions path invalidated as list store</td>
+            <td>Wrong assumption</td>
+            <td>API only creates/attaches user accounts</td>
+          </tr>
+          <tr>
+            <td class="dim">User challenged Custom Questions POST; schemas re-read</td>
+            <td>Corrected model; avoided bad design</td>
+            <td>Goal shift / user correction</td>
+            <td>Responses require existing <code>userId</code></td>
+          </tr>
+          <tr>
+            <td class="dim">Task 6 review cancelled mid-session; resumed later</td>
+            <td>Delay / break in SDD loop</td>
+            <td>Process miss</td>
+            <td>Harness/session interrupt during review dispatch</td>
+          </tr>
+          <tr>
+            <td class="dim">Worked in-place on dirty <code>interest-form</code> tree (no worktree)</td>
+            <td>Collision risk with unrelated <code>doc/</code> reorg</td>
+            <td>Tool or environment failure</td>
+            <td>Feature branch + uncommitted moves made clean worktree awkward</td>
+          </tr>
+          <tr>
+            <td class="dim">Final review found missing KV guard and DLQ enqueue failure path</td>
+            <td>Required fix commit before calling production-ready</td>
+            <td>Process miss</td>
+            <td>Per-task gates passed; durability edge cases caught only at whole-branch review</td>
+          </tr>
+          <tr>
+            <td class="dim">Live API key, KV IDs, cron still absent</td>
+            <td>Middleware unproven against real Volunteer/CF</td>
+            <td>Ambiguous requirements</td>
+            <td>Explicitly deferred (“API key later”); ops not in session scope</td>
+          </tr>
+          <tr>
+            <td class="dim">Frontend form never built</td>
+            <td>E2E interest capture incomplete vs original ask</td>
+            <td>Goal shift / user correction</td>
+            <td>Middleware plan deliberately out of scoped form UI</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What worked</h2>
+    <ul>
+      <li>Locked priorities and destination (Volunteer only; Security &gt; Reliability &gt; Speed) before trade-off analysis.</li>
+      <li>OpenAPI-backed API assessment; user challenge on Custom Questions forced a correct re-read.</li>
+      <li>Plan → SDD with implementer + per-task reviewer + final review + one fix wave.</li>
+      <li>Injected <code>fetch</code>/memory KV so 44 tests run without CF or Volunteer credentials.</li>
+      <li>Honest registration semantics: form path is org-user create, not a mailing list.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Next steps</h2>
+    <ol>
+      <li>Obtain Bloomerang Volunteer API key and numeric <code>org_id</code>; spike live <code>POST .../users</code> with minimal body.</li>
+      <li>Create CF KV namespaces; paste ids into <code>wrangler.toml</code>; set Pages secrets; unset <code>TURNSTILE_SKIP</code> in production.</li>
+      <li>Wire cron/Worker for <code>processDlqBatch</code> sharing <code>DLQ_KV</code>.</li>
+      <li>Build Get Involved form UI + Turnstile client calling <code>POST /api/interest</code> (separate plan).</li>
+      <li>User: integrate <code>interest-form</code> (merge/PR) and resolve unrelated dirty <code>doc/</code> → <code>references/</code> tree.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Session summary</h2>
+    <p>
+      The session moved from an open-ended interest-form idea through API reality (Volunteer is registration, not a list), a full technical design, a bite-sized middleware plan, and subagent-driven implementation on <code>interest-form</code>. Ten plan tasks plus a hardening fix landed with 44 passing tests. Live credentials, Cloudflare provisioning, and the browser form remain open; the user owns git from here. Overall outcome is <strong>partial</strong> against the original end-to-end form ask, and <strong>complete</strong> against the locked middleware-design-and-build goals.
+    </p>
+  </section>
+
+  <section>
+    <h2>Artifacts</h2>
+    <ul>
+      <li><code>references/TDDs/Interest Form Bloomerang Volunteer - Technical Design - 08.02.html</code></li>
+      <li><code>references/plans/2026-08-02-volunteer-registration-middleware.md</code></li>
+      <li><code>functions/api/interest.js</code>, <code>functions/lib/*.js</code>, <code>functions/scheduled/retry-dlq.js</code></li>
+      <li><code>tests/*.test.js</code>, <code>tests/helpers/*</code>, <code>scripts/smoke-interest.sh</code></li>
+      <li><code>package.json</code>, <code>wrangler.toml</code>, <code>.dev.vars.example</code>, README Middleware section</li>
+      <li>Commits on <code>interest-form</code>: <code>387baa2</code> … <code>7acc4f5</code> (10 commits)</li>
+      <li>Verification: <code>npm test</code> → 44/44 passed</li>
+    </ul>
+  </section>
+
+  <footer class="doc-footer">
+    <p>Session log · Volunteer interest middleware · 2026-08-02 · Evaluation: subagent</p>
+  </footer>
+</main>
+</body>
+</html>
