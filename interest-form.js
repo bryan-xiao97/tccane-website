@@ -35,20 +35,11 @@ export async function initInterestForm({
   const idleLabel = submit.querySelector('.interest-submit__idle');
   const busyLabel = submit.querySelector('.interest-submit__busy');
   const success = documentRef.getElementById('interest-success');
-  const configResponse = await fetchImpl('/api/config', { headers: { Accept: 'application/json' } });
-  const config = await configResponse.json().catch(() => null);
-  if (!configResponse.ok || typeof config?.turnstileSiteKey !== 'string' || !config.turnstileSiteKey) {
-    throw new Error('Turnstile configuration unavailable');
-  }
-  const api = turnstileApi || await loadTurnstile(documentRef);
   let token = '';
   let submitting = false;
-  const widgetId = api.render('#interest-turnstile', {
-    sitekey: config.turnstileSiteKey,
-    callback: (value) => { token = value; status.textContent = ''; },
-    'expired-callback': () => { token = ''; },
-    'error-callback': () => { token = ''; },
-  });
+  let ready = false;
+  let api;
+  let widgetId;
 
   const setBusy = (busy) => {
     submitting = busy;
@@ -60,7 +51,7 @@ export async function initInterestForm({
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    if (submitting || !form.reportValidity()) return;
+    if (!ready || submitting || !form.reportValidity()) return;
     if (!token) {
       status.dataset.state = 'error';
       status.textContent = 'Please complete the verification.';
@@ -101,5 +92,22 @@ export async function initInterestForm({
   };
 
   form.addEventListener('submit', onSubmit);
+  submit.disabled = true;
+
+  const configResponse = await fetchImpl('/api/config', { headers: { Accept: 'application/json' } });
+  const config = await configResponse.json().catch(() => null);
+  if (!configResponse.ok || typeof config?.turnstileSiteKey !== 'string' || !config.turnstileSiteKey) {
+    throw new Error('Turnstile configuration unavailable');
+  }
+  api = turnstileApi || await loadTurnstile(documentRef);
+  widgetId = api.render('#interest-turnstile', {
+    sitekey: config.turnstileSiteKey,
+    callback: (value) => { token = value; status.textContent = ''; },
+    'expired-callback': () => { token = ''; },
+    'error-callback': () => { token = ''; },
+  });
+  ready = true;
+  submit.disabled = false;
+
   return { destroy() { form.removeEventListener('submit', onSubmit); } };
 }
