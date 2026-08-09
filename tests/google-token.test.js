@@ -35,39 +35,50 @@ describe('oauthConfigFromEnv', () => {
 });
 
 describe('createTokenProvider', () => {
-  test('sets the refresh token and reuses one OAuth client', async () => {
-    const built = [];
-    class FakeOAuth2Client {
-      constructor(clientId, clientSecret) {
-        built.push({ clientId, clientSecret, credentials: null });
-      }
-      setCredentials(credentials) {
-        built[0].credentials = credentials;
-      }
-      async getAccessToken() {
-        return { token: 'access-token' };
-      }
-    }
-    const getAccessToken = createTokenProvider(CONFIG, FakeOAuth2Client, 100);
+  test('exchanges the refresh token through the OAuth endpoint', async () => {
+    let request;
+    const fetchImpl = async (url, init) => {
+      request = { url, init };
+      return new Response(JSON.stringify({
+        access_token: 'access-token',
+        expires_in: 3599,
+        token_type: 'Bearer',
+        scope: 'https://www.googleapis.com/auth/drive.file',
+      }), { status: 200, headers: { 'content-type': 'application/json' } });
+    };
+
+    const getAccessToken = createTokenProvider(CONFIG, fetchImpl, 100);
+
+    expect(await getAccessToken()).toBe('access-token');
+    expect(request.url).toBe('https://oauth2.googleapis.com/token');
+    expect(request.init).toEqual({
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: 'client_id=client.apps.googleusercontent.com&client_secret=client-secret&refresh_token=refresh-token&grant_type=refresh_token',
+    });
+  });
+
+  test('reuses an access token until its expiry window', async () => {
+    let requests = 0;
+    const fetchImpl = async () => {
+      requests += 1;
+      return new Response(JSON.stringify({ access_token: 'access-token', expires_in: 3599 }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    };
+    const getAccessToken = createTokenProvider(CONFIG, fetchImpl, 100, () => 0);
     expect(await getAccessToken()).toBe('access-token');
     expect(await getAccessToken()).toBe('access-token');
-    expect(built).toEqual([{
-      clientId: CONFIG.clientId,
-      clientSecret: CONFIG.clientSecret,
-      credentials: { refresh_token: CONFIG.refreshToken },
-    }]);
+    expect(requests).toBe(1);
   });
 
   test('converts invalid_grant to a permanent typed error', async () => {
-    class FakeOAuth2Client {
-      setCredentials() {}
-      async getAccessToken() {
-        const error = new Error('revoked');
-        error.response = { status: 400, data: { error: 'invalid_grant' } };
-        throw error;
-      }
-    }
-    const getAccessToken = createTokenProvider(CONFIG, FakeOAuth2Client, 100);
+    const fetchImpl = async () => new Response(JSON.stringify({
+      error: 'invalid_grant',
+      error_description: 'Token has been revoked.',
+    }), { status: 400, headers: { 'content-type': 'application/json' } });
+    const getAccessToken = createTokenProvider(CONFIG, fetchImpl, 100);
     await expect(getAccessToken()).rejects.toEqual(expect.objectContaining({
       name: 'GoogleAuthError', code: 'invalid_grant', retryable: false, status: 400,
     }));

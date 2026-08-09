@@ -27,6 +27,16 @@ function turnstileFake() {
 
 beforeEach(() => fixture());
 
+test('prevents page navigation while form setup is still pending', () => {
+  const fetchImpl = vi.fn(() => new Promise(() => {}));
+  initInterestForm({ documentRef: document, fetchImpl });
+
+  const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+  const notCanceled = document.getElementById('interest-form').dispatchEvent(submitEvent);
+
+  expect(notCanceled).toBe(false);
+});
+
 test.each(['recorded', 'accepted'])('%s replaces the form with persistent success', async (status) => {
   const turnstileApi = turnstileFake();
   const fetchImpl = vi.fn(async (url, init) => {
