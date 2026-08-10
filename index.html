@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tzu Chi Collegiate Association · Northeast Region</title>
   <meta name="description" content="Tzu Chi Collegiate Association, Northeast Region: college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, open to every background.">
-  <link rel="icon" href="assets/tcca-emblem.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/TzuChiUSA-emblem.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/ptserif-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/lato-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
   <script>document.documentElement.classList.remove('no-js');</script>
 </head>
@@ -16,7 +18,7 @@
   <header class="site-header">
     <div class="site-header__inner">
       <a href="#top" class="brand">
-        <img src="assets/tcca-emblem.png" alt="Tzu Chi Collegiate Association emblem">
+        <img src="assets/TzuChiUSA-emblem.png" alt="Tzu Chi Collegiate Association emblem">
         <span class="brand__text">
           <span class="brand__name">Tzu Chi Collegiate Association</span>
           <span class="brand__region">Northeast Region</span>
@@ -48,9 +50,9 @@
       <div style="position:relative;z-index:2;width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
         <div style="display:flex;flex-wrap:wrap;align-items:center;gap:2.5rem;padding-block:clamp(3.2rem,2rem + 6vw,6rem);min-height:min(76vh,640px)">
           <div style="flex:1 1 360px;max-width:39rem">
-            <p class="eyebrow">Tzu Chi Collegiate Association · Northeast</p>
-            <h1 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-display);line-height:1.08;letter-spacing:-0.015em;color:var(--tc-navy-deep);margin:0 0 1.1rem">Great Love, carried onto campus.</h1>
-            <p style="font-size:var(--tc-fs-lead);color:var(--tc-navy);max-width:34rem;margin:0 0 1.9rem">We are Tzu Ching, college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, and open to every background.</p>
+            <p class="eyebrow" style="color:#3F6B47">Tzu Chi Collegiate Association · Northeast</p>
+            <h1 style="font-family:var(--tc-font-display);font-weight:600;font-size:var(--tc-fs-display);line-height:1.08;letter-spacing:-0.015em;color:#16223B;margin:0 0 1.1rem">Great Love, carried onto campus.</h1>
+            <p style="font-size:var(--tc-fs-lead);color:#1B2A4A;max-width:34rem;margin:0 0 1.9rem">We are Tzu Ching, college students across the Northeast who turn compassion into everyday service. Backed by a global humanitarian family, and open to every background.</p>
             <div style="display:flex;flex-wrap:wrap;gap:.85rem">
               <a class="btn btn--primary btn--lg" href="#involved">Become a Tzu Ching</a>
               <a class="btn btn--secondary btn--lg" href="#chapters">Find your chapter</a>
@@ -105,14 +107,14 @@
             <img src="assets/bamboo-bank.svg" alt="" style="width:min(260px,70vw)">
           </div>
         </div>
-        <div style="margin-top:clamp(1.8rem,3vw,2.6rem);padding:1.1rem 1.3rem;background:var(--tc-cloud);border-left:4px solid var(--tc-sky);border-radius:0 10px 10px 0;color:var(--tc-navy-deep);font-size:.96rem;max-width:78ch">
+        <div style="margin-top:clamp(1.8rem,3vw,2.6rem);padding:1.1rem 1.3rem;background:var(--tc-cloud);border-left:4px solid var(--tc-emerald);border-radius:0 10px 10px 0;color:var(--tc-navy-deep);font-size:.96rem;max-width:78ch">
           Many drops make a river. TCCA grew from the same spirit as Tzu Chi’s bamboo coin banks: small, daily, mindful giving from ordinary people who choose to give what they can.
         </div>
       </div>
     </section>
 
     <!-- WHY JOIN -->
-    <section id="why" data-reveal="" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem);background:linear-gradient(180deg,var(--tc-white) 0%,#F1F5FA 100%)">
+    <section id="why" data-reveal="" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem);background:linear-gradient(180deg,var(--tc-white) 0%,#F1F8F3 100%)">
       <div style="width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
         <div style="display:flex;flex-wrap:wrap;gap:clamp(2rem,5vw,4.5rem);align-items:flex-start">
           <div style="flex:1 1 300px;max-width:32rem">
@@ -172,23 +174,23 @@
           <p style="margin:1rem 0 0;color:var(--tc-text-muted)">Every Tzu Ching commits to four founding missions, the ground on which all of our service stands.</p>
         </div>
         <div class="mission-grid">
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell" data-accent="emerald" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
             <div class="mission-cell__media">
               <picture class="mission-cell__frame">
                 <source type="image/webp" srcset="assets/photos/mission-charity-philippines-800.webp">
                 <img src="assets/photos/mission-charity-philippines-800.jpg" width="800" height="533" loading="lazy" decoding="async" alt="A Tzu Chi volunteer in a blue cap reviews notes with soldiers and a rescue worker in an orange helmet at a relief site in the Philippines.">
               </picture>
               <span class="mission-cell__badge" aria-hidden="true">
-                <svg viewBox="0 0 48 48" fill="none" stroke="var(--tc-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 48 48" fill="none" stroke="var(--section-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M24 19c-2-4-9-4-9 2 0 5 9 10 9 10s9-5 9-10c0-6-7-6-9-2Z"></path>
                   <path d="M9 33c5 5 25 5 30 0"></path>
                 </svg>
               </span>
             </div>
-            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Charity</h3>
+            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--section-accent);margin:0 0 .55rem">Charity</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Direct relief and recovery for families in hardship, given with dignity, never pity.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell" data-accent="emerald" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
             <div class="mission-cell__media">
               <picture class="mission-cell__frame">
                 <source type="image/webp" srcset="assets/photos/mission-medicine-nepal-566.webp">
@@ -201,10 +203,10 @@
                 </svg>
               </span>
             </div>
-            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Medicine</h3>
+            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--section-accent);margin:0 0 .55rem">Medicine</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Free clinics and health outreach that bring care to those who cannot reach it.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell" data-accent="emerald" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
             <div class="mission-cell__media">
               <picture class="mission-cell__frame">
                 <source type="image/webp" srcset="assets/photos/mission-education-nepal-800.webp">
@@ -217,10 +219,10 @@
                 </svg>
               </span>
             </div>
-            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Education</h3>
+            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--section-accent);margin:0 0 .55rem">Education</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Tutoring, scholarships, and vocational training: the skills people build a life on.</p>
           </div>
-          <div class="mission-cell" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
+          <div class="mission-cell" data-accent="emerald" style="text-align:center;padding:clamp(1.9rem,3vw,2.7rem) 1.4rem;transition:background-color var(--tc-dur-base) var(--tc-ease)">
             <div class="mission-cell__media">
               <picture class="mission-cell__frame">
                 <source type="image/webp" srcset="assets/photos/mission-culture-japan-800.webp">
@@ -233,7 +235,7 @@
                 </svg>
               </span>
             </div>
-            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--tc-navy);margin:0 0 .55rem">Humanistic Culture</h3>
+            <h3 style="font-family:var(--tc-font-display);font-size:var(--tc-fs-h3);font-weight:600;color:var(--section-accent);margin:0 0 .55rem">Humanistic Culture</h3>
             <p style="margin:0 auto;max-width:24ch;font-size:.96rem;color:var(--tc-text-muted)">Presence that outlasts the headlines, and stories told with truth, goodness, and beauty.</p>
           </div>
         </div>
@@ -294,7 +296,7 @@
     </section>
 
     <!-- CHAPTERS -->
-    <section id="chapters" data-reveal="" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem);background:linear-gradient(180deg,var(--tc-white) 0%,#F1F5FA 100%)">
+    <section id="chapters" data-reveal="" style="scroll-margin-top:84px;padding-block:clamp(3.5rem,2.2rem + 5.5vw,6.5rem);background:linear-gradient(180deg,var(--tc-white) 0%,#F1F8F3 100%)">
       <div style="width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
         <div style="margin-bottom:clamp(2rem,3vw,3rem)">
           <p class="eyebrow">Chapters</p>
@@ -387,14 +389,14 @@
               <li style="display:flex;gap:.9rem;align-items:stretch">
                 <span style="display:flex;flex-direction:column;align-items:center;flex:none">
                   <span style="width:34px;height:34px;border-radius:999px;background:var(--tc-white);color:var(--tc-navy);font-family:var(--tc-font-display);font-weight:600;font-size:1.02rem;display:grid;place-items:center;box-shadow:var(--tc-shadow-soft)">1</span>
-                  <span style="width:2px;flex:1;min-height:14px;background:rgba(27,42,74,.16);margin-block:6px"></span>
+                  <span style="width:2px;flex:1;min-height:14px;background:rgba(0,84,51,.18);margin-block:6px"></span>
                 </span>
                 <p style="margin:0;padding-bottom:1.3rem;color:var(--tc-navy-deep);font-size:1rem;font-weight:500">Give 2–4 weeks’ notice</p>
               </li>
               <li style="display:flex;gap:.9rem;align-items:stretch">
                 <span style="display:flex;flex-direction:column;align-items:center;flex:none">
                   <span style="width:34px;height:34px;border-radius:999px;background:var(--tc-white);color:var(--tc-navy);font-family:var(--tc-font-display);font-weight:600;font-size:1.02rem;display:grid;place-items:center;box-shadow:var(--tc-shadow-soft)">2</span>
-                  <span style="width:2px;flex:1;min-height:14px;background:rgba(27,42,74,.16);margin-block:6px"></span>
+                  <span style="width:2px;flex:1;min-height:14px;background:rgba(0,84,51,.18);margin-block:6px"></span>
                 </span>
                 <p style="margin:0;padding-bottom:1.3rem;color:var(--tc-navy-deep);font-size:1rem;font-weight:500">Submit the required documentation</p>
               </li>
@@ -412,7 +414,7 @@
     </section>
 
     <!-- INVOLVED / CONTACT -->
-    <section id="involved" style="scroll-margin-top:84px;background:radial-gradient(140% 120% at 85% -10%,#25406e 0%,var(--tc-navy) 45%,var(--tc-navy-deep) 100%);color:var(--tc-white)">
+    <section id="involved" style="scroll-margin-top:84px;background:radial-gradient(140% 120% at 85% -10%,#0b7d4e 0%,var(--tc-emerald) 45%,var(--tc-emerald-deep) 100%);color:var(--tc-white)">
       <div style="width:100%;max-width:1140px;margin-inline:auto;padding-inline:clamp(1.1rem,0.6rem + 2vw,2.25rem)">
         <div style="padding-block:clamp(3rem,2rem + 5vw,5.5rem);text-align:center">
           <p class="eyebrow eyebrow--onInverse">Get involved</p>
@@ -480,7 +482,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer style="background:var(--tc-navy-deep);color:var(--tc-cloud)">
+    <footer style="background:var(--tc-emerald-deep);color:var(--tc-cloud)">
       <div style="display:flex;justify-content:center;padding-top:2.4rem">
         <img src="assets/roofline.svg" alt="" aria-hidden="true" style="width:120px;opacity:.85">
       </div>
@@ -491,10 +493,10 @@
               <img src="assets/lotus-mark-blue.svg" width="32" height="32" alt="" aria-hidden="true">
               <span style="font-family:var(--tc-font-display);font-size:1.12rem;color:var(--tc-white)">TCCA Northeast</span>
             </div>
-            <p style="color:#B9C6DA;font-size:.95rem;max-width:36ch;margin:0">Tzu Chi Collegiate Association, Northeast Region, the collegiate youth of Tzu Chi USA, serving with compassion across the Northeast.</p>
+            <p style="color:#CFE3D6;font-size:.95rem;max-width:36ch;margin:0">Tzu Chi Collegiate Association, Northeast Region, the collegiate youth of Tzu Chi USA, serving with compassion across the Northeast.</p>
           </div>
           <div>
-            <h2 style="font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#8FA2BE;margin:0 0 .9rem;font-weight:600">Explore</h2>
+            <h2 style="font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#AEC8B7;margin:0 0 .9rem;font-weight:600">Explore</h2>
             <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">
               <li><a href="#about" class="footer-link" style="color:var(--tc-cloud);text-decoration:none">About TCCA</a></li>
               <li><a href="#why" class="footer-link" style="color:var(--tc-cloud);text-decoration:none">Why Join</a></li>
@@ -503,7 +505,7 @@
             </ul>
           </div>
           <div>
-            <h2 style="font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#8FA2BE;margin:0 0 .9rem;font-weight:600">Connect</h2>
+            <h2 style="font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#AEC8B7;margin:0 0 .9rem;font-weight:600">Connect</h2>
             <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem">
               <li><a href="mailto:tcca.neregion@us.tzuchi.org" class="footer-link" style="color:var(--tc-cloud);text-decoration:none">Email an advisor</a></li>
               <li><a href="https://www.instagram.com/neregiontcca/" class="footer-link" style="color:var(--tc-cloud);text-decoration:none">Instagram</a></li>
@@ -511,8 +513,8 @@
             </ul>
           </div>
         </div>
-        <div style="border-top:1px solid rgba(255,255,255,.12);padding-block:1.5rem 2.4rem;font-size:.8rem;line-height:1.6;color:#8FA2BE">
-          <strong style="color:#B9C6DA;font-weight:600">Tzu Chi Collegiate Association · Northeast Region.</strong> &nbsp;|&nbsp; Part of the global Tzu Chi mission of compassion and relief, founded in 1966.
+        <div style="border-top:1px solid rgba(255,255,255,.12);padding-block:1.5rem 2.4rem;font-size:.8rem;line-height:1.6;color:#AEC8B7">
+          <strong style="color:#CFE3D6;font-weight:600">Tzu Chi Collegiate Association · Northeast Region.</strong> &nbsp;|&nbsp; Part of the global Tzu Chi mission of compassion and relief, founded in 1966.
         </div>
       </div>
     </footer>

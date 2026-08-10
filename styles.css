@@ -5,45 +5,68 @@
    design system (colors / typography / fonts / spacing / motion).
    Component + hover classes reproduce the former design-system
    components and the DC-only `style-hover` attribute behavior.
-   Web fonts load from <link> tags in index.html (not @import)
-   so the stylesheet download doesn't serialize behind them.
+   Reskinned to the Tzu Chi USA design system (green-led, section-
+   coded palette + PT Serif / Lato). Fonts are self-hosted woff2
+   via @font-face below; the two critical faces are preloaded from
+   index.html so first paint does not wait on the stylesheet.
    ============================================================ */
 
 /* ------------------------------------------------------------
    Color tokens
    ------------------------------------------------------------ */
 :root {
-  /* Base palette */
-  --tc-navy: #1B2A4A;        /* Compassion Navy — primary, grounding */
-  --tc-navy-deep: #16223B;   /* Navy Deep (Ink) — body text on light */
-  --tc-sky: #4A78B0;         /* Sky Blue — secondary accent, large text only */
-  --tc-cloud: #DCE6F2;       /* Cloud Blue — soft fills, tints */
-  --tc-paper: #FAF8F3;       /* Paper White — dominant background */
-  --tc-white: #FFFFFF;       /* Pure White — cards, contrast surfaces */
-  --tc-grey: #6E7277;        /* Monastic Grey — captions, dividers, labels */
-  --tc-ink-grey: #585C61;    /* Ink Grey — secondary body text on light */
-  --tc-stone: #D7D5CE;       /* Stone — borders, placeholder fills */
-  --tc-stone-soft: #ECEAE3;  /* Stone Soft — hairline borders, faint fills */
-  --tc-bamboo: #4E7A51;      /* Bamboo Green — primary CTA, eco accent */
-  --tc-bamboo-deep: #3F6B47; /* Bamboo Deep — button hover, safe green text */
-  --tc-gold: #C9A24B;        /* Seed Gold — rare highlight only */
-  --tc-lotus: #E7C5CE;       /* Lotus Pink — very rare decorative touch */
+  /* ---- Tzu Chi USA core palette — green-led, section-coded
+          (sampled from the 2024 Annual Report). ---- */
+  --tc-emerald: #006A41;       /* Primary — logo, CTAs, eyebrows, stats, panel titles */
+  --tc-emerald-deep: #005433;  /* Text-safe emerald / hover / dark surfaces */
+  --tc-blue: #0872B9;          /* Medical mission accent */
+  --tc-blue-deep: #065E97;     /* Blue safe for small text on tint */
+  --tc-periwinkle: #6B6EB3;    /* Global / UN mission accent */
+  --tc-periwinkle-deep: #4E5196;
+  --tc-clay: #B4692E;          /* Humanistic Culture (extension) — warm accent */
+  --tc-teal: #2E7D74;          /* Environmental Protection (extension) */
+  --tc-mint: #F4FCF0;          /* Pale green panel tint */
+  --tc-sky-tint: #ECF4F8;      /* Pale blue panel tint (medical) */
+  --tc-lavender: #F0F0F8;      /* Pale periwinkle panel tint (global) */
+  --tc-ink: #1A1A1A;           /* Warm near-black — body + headings */
+  --tc-warm-grey: #6B6660;     /* Captions, labels, dividers, muted meta */
+  --tc-paper: #FAF8F3;         /* Warm off-white — dominant page background */
+  --tc-white: #FFFFFF;         /* Cards, contrast surfaces */
+  --tc-stone: #D7D5CE;         /* Borders, placeholder fills (warm neutral) */
+  --tc-stone-soft: #ECEAE3;    /* Hairline borders, faint fills */
+
+  /* ---- Back-compat aliases -------------------------------------
+     Components and the 167 inline styles reference these original
+     names directly. Rather than rename across HTML + CSS (high risk),
+     each old primitive is repointed to its role in the new palette.
+     Note the deliberate name/value drift: --tc-navy now holds emerald,
+     --tc-sky now holds the DS blue. See the reskin functional spec. */
+  --tc-navy: var(--tc-emerald);        /* was primary navy → emerald */
+  --tc-navy-deep: var(--tc-ink);       /* was body ink navy → warm ink */
+  --tc-sky: var(--tc-blue);            /* was mid-blue accent → DS blue */
+  --tc-cloud: #E7F2EC;                 /* was pale blue fill → pale green fill */
+  --tc-grey: var(--tc-warm-grey);
+  --tc-ink-grey: #5A544D;              /* warm secondary body text */
+  --tc-bamboo: var(--tc-emerald);
+  --tc-bamboo-deep: var(--tc-emerald-deep);
+  --tc-gold: var(--tc-clay);           /* seed gold → warm clay */
+  --tc-lotus: #D9DAF0;                 /* soft periwinkle decorative touch */
 
   /* Semantic — surfaces */
   --tc-surface-page: var(--tc-paper);
   --tc-surface-card: var(--tc-white);
-  --tc-surface-sunken: var(--tc-cloud);
-  --tc-surface-inverse: var(--tc-navy);
-  --tc-surface-inverse-deep: var(--tc-navy-deep);
+  --tc-surface-sunken: var(--tc-mint);
+  --tc-surface-inverse: var(--tc-emerald);
+  --tc-surface-inverse-deep: var(--tc-emerald-deep);
 
   /* Semantic — text */
-  --tc-text-strong: var(--tc-navy);
-  --tc-text-body: var(--tc-navy-deep);
+  --tc-text-strong: var(--tc-ink);     /* headings default to ink; panel titles use accent */
+  --tc-text-body: var(--tc-ink);
   --tc-text-muted: var(--tc-ink-grey);
-  --tc-text-subtle: var(--tc-grey);
-  --tc-text-on-inverse: var(--tc-paper);
-  --tc-text-on-inverse-muted: var(--tc-cloud);
-  --tc-text-accent: var(--tc-bamboo-deep);
+  --tc-text-subtle: var(--tc-warm-grey);
+  --tc-text-on-inverse: #FFFFFF;
+  --tc-text-on-inverse-muted: #CFE3D6;
+  --tc-text-accent: var(--tc-emerald-deep);
 
   /* Semantic — lines & borders */
   --tc-border: var(--tc-stone-soft);
@@ -51,24 +74,38 @@
   --tc-divider: var(--tc-stone);
 
   /* Semantic — interactive */
-  --tc-action: var(--tc-bamboo);
-  --tc-action-hover: var(--tc-bamboo-deep);
-  --tc-action-text: var(--tc-white);
-  --tc-focus-ring: var(--tc-sky);
+  --tc-action: var(--tc-emerald);
+  --tc-action-hover: var(--tc-emerald-deep);
+  --tc-action-text: #FFFFFF;
+  --tc-focus-ring: var(--tc-emerald);
 
   /* Accents (decorative, sparing) */
-  --tc-accent-sky: var(--tc-sky);
-  --tc-accent-gold: var(--tc-gold);
-  --tc-accent-lotus: var(--tc-lotus);
+  --tc-accent-sky: var(--tc-blue);
+  --tc-accent-gold: var(--tc-clay);
+  --tc-accent-lotus: var(--tc-periwinkle);
+
+  /* Section-coding (missions): default emerald, overridden per data-accent */
+  --section-accent: var(--tc-emerald);
+  --section-accent-deep: var(--tc-emerald-deep);
+  --section-tint: var(--tc-mint);
 }
+
+/* Per-mission accents — the report's section-coded system.
+   Applied to individual mission cells; propagates to badge, title, tint. */
+[data-accent="emerald"] { --section-accent: var(--tc-emerald);    --section-accent-deep: var(--tc-emerald-deep); --section-tint: var(--tc-mint); }
+[data-accent="blue"]    { --section-accent: var(--tc-blue);       --section-accent-deep: var(--tc-blue-deep);    --section-tint: var(--tc-sky-tint); }
+[data-accent="periwinkle"] { --section-accent: var(--tc-periwinkle); --section-accent-deep: var(--tc-periwinkle-deep); --section-tint: var(--tc-lavender); }
+[data-accent="clay"]    { --section-accent: var(--tc-clay);       --section-accent-deep: #8f4f1f;                --section-tint: #FBF1E9; }
+[data-accent="teal"]    { --section-accent: var(--tc-teal);       --section-accent-deep: #1f5a53;                --section-tint: #EEF6F4; }
 
 /* ------------------------------------------------------------
    Typography tokens
    ------------------------------------------------------------ */
 :root {
-  /* Families */
-  --tc-font-display: "Palatino Linotype", "Spectral", "Iowan Old Style", "Book Antiqua", "Palatino", Georgia, serif;
-  --tc-font-body: "Segoe UI", "Source Sans 3", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  /* Families — Tzu Chi USA type system: PT Serif reads, Lato labels. */
+  --tc-font-display: "PT Serif", Georgia, "Times New Roman", serif;   /* headlines, drop caps, stat figures */
+  --tc-font-body: "PT Serif", Georgia, "Times New Roman", serif;      /* body copy — editorial serif */
+  --tc-font-ui: "Lato", system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* eyebrows, labels, buttons, nav */
   --tc-font-brush: "STKaiti", "KaiTi", "Kaiti TC", "BiauKai", "DFKai-SB", "Noto Serif TC", serif;
   --tc-font-zh: "Microsoft JhengHei", "PingFang TC", "Noto Sans CJK TC", "Microsoft YaHei", sans-serif;
 
@@ -106,18 +143,42 @@
 /* ------------------------------------------------------------
    Platform font faces (local-only, graceful fallback)
    ------------------------------------------------------------ */
+/* PT Serif + Lato self-hosted (latin subset, OFL). PT Serif and Lato
+   ship only 400/700, so the bold face covers the 600 semibold the tokens
+   request — no faux-bold synthesis. */
 @font-face {
-  font-family: "Palatino Linotype";
-  src: local("Palatino Linotype"), local("Palatino"), local("Book Antiqua"), local("Iowan Old Style");
-  font-weight: 400 600;
+  font-family: "PT Serif";
+  src: url("assets/fonts/ptserif-400.woff2") format("woff2");
+  font-weight: 400 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Palatino Linotype";
-  src: local("Palatino Linotype Italic"), local("Palatino Italic"), local("Book Antiqua Italic");
-  font-weight: 400 600;
+  font-family: "PT Serif";
+  src: url("assets/fonts/ptserif-700.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PT Serif";
+  src: url("assets/fonts/ptserif-400italic.woff2") format("woff2");
+  font-weight: 400 700;
   font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("assets/fonts/lato-400.woff2") format("woff2");
+  font-weight: 300 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Lato";
+  src: url("assets/fonts/lato-700.woff2") format("woff2");
+  font-weight: 600 900;
+  font-style: normal;
   font-display: swap;
 }
 @font-face {
@@ -162,9 +223,9 @@
   --tc-border-width-strong: 1.5px;
 
   /* Shadows (soft, low, navy-tinted) */
-  --tc-shadow-soft: 0 1px 2px rgba(22,34,59,.04), 0 4px 14px rgba(22,34,59,.05);
-  --tc-shadow-card: 0 1px 2px rgba(22,34,59,.05), 0 10px 30px rgba(22,34,59,.07);
-  --tc-shadow-lift: 0 2px 4px rgba(22,34,59,.06), 0 18px 44px rgba(22,34,59,.10);
+  --tc-shadow-soft: 0 1px 2px rgba(0,52,33,.05), 0 4px 14px rgba(0,52,33,.06);
+  --tc-shadow-card: 0 1px 2px rgba(0,52,33,.06), 0 10px 30px rgba(0,52,33,.08);
+  --tc-shadow-lift: 0 2px 4px rgba(0,52,33,.07), 0 18px 44px rgba(0,52,33,.11);
 }
 
 /* ------------------------------------------------------------
@@ -215,7 +276,7 @@ a { color: inherit; }
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  font-family: var(--tc-font-body);
+  font-family: var(--tc-font-ui);
   font-weight: var(--tc-fw-semibold);
   line-height: 1;
   border-radius: var(--tc-radius-pill);
@@ -245,7 +306,7 @@ a { color: inherit; }
    ------------------------------------------------------------ */
 .eyebrow {
   margin: 0 0 .9rem;
-  font-family: var(--tc-font-body);
+  font-family: var(--tc-font-ui);
   font-size: var(--tc-fs-eyebrow);
   font-weight: var(--tc-fw-semibold);
   letter-spacing: var(--tc-tracking-eyebrow);
@@ -265,7 +326,7 @@ a { color: inherit; }
   line-height: 1.1;
 }
 .stat__label {
-  font-family: var(--tc-font-body);
+  font-family: var(--tc-font-ui);
   font-size: var(--tc-fs-caption);
   letter-spacing: .06em;
   color: var(--tc-text-subtle);
@@ -297,7 +358,7 @@ a { color: inherit; }
   display: inline-flex;
   align-items: center;
   gap: .35rem;
-  font-family: var(--tc-font-body);
+  font-family: var(--tc-font-ui);
   font-size: .72rem;
   font-weight: var(--tc-fw-semibold);
   letter-spacing: .08em;
@@ -305,8 +366,8 @@ a { color: inherit; }
   padding: .22rem .6rem;
   border-radius: var(--tc-radius-pill);
 }
-.tag--accent { background: #E7EFE7; border: 1px solid transparent; color: var(--tc-bamboo-deep); }
-.tag--sky-outline { background: transparent; border: 1px solid var(--tc-sky); color: var(--tc-navy); }
+.tag--accent { background: var(--tc-mint); border: 1px solid transparent; color: var(--tc-emerald-deep); }
+.tag--sky-outline { background: transparent; border: 1px solid var(--tc-blue); color: var(--tc-blue-deep); }
 
 /* ------------------------------------------------------------
    Components — Site header & navigation
@@ -352,6 +413,7 @@ a { color: inherit; }
   white-space: nowrap;
 }
 .brand__region {
+  font-family: var(--tc-font-ui);
   font-size: .72rem;
   letter-spacing: .13em;
   text-transform: uppercase;
@@ -362,6 +424,7 @@ a { color: inherit; }
 .nav-link {
   text-decoration: none;
   color: var(--tc-navy-deep);
+  font-family: var(--tc-font-ui);
   font-weight: var(--tc-fw-medium);
   font-size: .98rem;
   white-space: nowrap;
@@ -479,9 +542,9 @@ a { color: inherit; }
 .hero__art { flex: 0 1 360px; display: flex; justify-content: center; align-self: flex-end; }
 .hero__art img { width: min(400px, 84vw); }
 
-/* On the sky gradient the green eyebrow falls below readable
-   contrast; the hero uses navy instead. */
-.eyebrow--onSky { color: var(--tc-navy); }
+/* On the sky gradient the accent eyebrow falls below AA at the
+   darkest top of the gradient; the hero eyebrow uses ink (≈6.8:1). */
+.eyebrow--onSky { color: var(--tc-ink); }
 
 @media (max-width: 560px) {
   .hero__layout { padding-block: 2.6rem 2.8rem; min-height: 0; gap: 1.8rem; }
@@ -652,8 +715,8 @@ a { color: inherit; }
 .why-row:hover { background: rgba(255,255,255,.75); }
 /* Composited rather than translucent: the cell now paints its own opaque
    background so the grid's divider colour cannot bleed through the tint. */
-.mission-cell:hover { background-color: color-mix(in srgb, var(--tc-accent-sky) 6%, var(--tc-surface-page)); }
-.ledger-row:hover { background: rgba(74,120,176,.05); }
+.mission-cell:hover { background-color: var(--section-tint); }
+.ledger-row:hover { background: rgba(0,106,65,.05); }
 
 .text-link:hover { text-decoration: underline; }
 
@@ -685,7 +748,7 @@ a { color: inherit; }
 }
 .photo-figure__caption {
   margin-top: .7rem;
-  font-family: var(--tc-font-body);
+  font-family: var(--tc-font-ui);
   font-size: var(--tc-fs-caption);
   line-height: var(--tc-lh-snug);
   color: var(--tc-text-subtle);
@@ -700,7 +763,7 @@ a { color: inherit; }
   margin: 0;
   padding: 2.4rem .95rem .8rem;
   color: var(--tc-white);
-  background: linear-gradient(180deg, rgba(22,34,59,0) 0%, rgba(22,34,59,.74) 62%, rgba(22,34,59,.88) 100%);
+  background: linear-gradient(180deg, rgba(16,28,22,0) 0%, rgba(16,28,22,.74) 62%, rgba(16,28,22,.9) 100%);
   border-radius: 0 0 var(--tc-radius) var(--tc-radius);
   pointer-events: none;
 }
@@ -826,7 +889,10 @@ a { color: inherit; }
 .mission-cell__badge svg {
   width: 28px;
   height: 28px;
+  stroke: var(--section-accent);
 }
+/* Ledger / resource line-art icons follow the emerald primary. */
+.ledger-row svg { stroke: var(--tc-emerald); }
 
 /* ------------------------------------------------------------
    Interest form (inline in "Get involved")
@@ -835,6 +901,7 @@ a { color: inherit; }
 .interest-form { position: relative; padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgba(255,255,255,.22); border-radius: var(--tc-radius-lg); background: rgba(255,255,255,.08); }
 .interest-form__fields { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
 .interest-field { display: grid; gap: .4rem; }
+.interest-field label { font-family: var(--tc-font-ui); font-size: .9rem; }
 .interest-field--wide { grid-column: 1 / -1; }
 .interest-field input { width: 100%; min-height: 46px; border: 1px solid rgba(255,255,255,.38); border-radius: var(--tc-radius-sm); padding: .7rem .8rem; color: var(--tc-navy-deep); background: var(--tc-white); font: inherit; }
 .interest-field input:focus-visible { outline: 3px solid var(--tc-sky); outline-offset: 2px; }

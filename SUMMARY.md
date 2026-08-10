@@ -11,7 +11,7 @@ A flat, zero-dependency static site:
 - **index.html** — Core structure and all page sections, with metadata, a favicon, and inline layout styles that reference the design tokens.
 - **styles.css** — Merged Tzu Chi design tokens (color, typography, fonts, spacing, motion), base reset, the ambient cloud-drift keyframe, and the component + `:hover` classes.
 - **app.js** — Vanilla JS controller. A single feature: scroll-triggered fade-and-rise reveals, fully reduced-motion aware.
-- **assets/** — SVG illustrations (lotus-and-ship, bamboo bank, roofline, lotus mark), mission icons, the `tcca-emblem.png` logo, and photography under `photos/` (web derivatives only; masters are git-ignored).
+- **assets/** — SVG illustrations (lotus-and-ship, bamboo bank, roofline, lotus mark), mission icons, the `TzuChiUSA-emblem.png` logo, and photography under `photos/` (web derivatives only; masters are git-ignored).
 - **tools/** — `build-photos.py`, which regenerates those derivatives. Authoring only; not part of serving the site.
 - **references/** — `WhyTCCA.md` and `TCCANE-policies.md` content notes, plus `_source/` (provenance archive — see below).
 
